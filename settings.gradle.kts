@@ -13,6 +13,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Avante AR Prototype"
+rootProject.name = "Avante-AR"
 include(":app")
  
