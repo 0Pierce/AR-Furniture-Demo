@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
     tools:context=".HomePageActivity">
 
     <Button
@@ -12,12 +11,9 @@
         android:layout_width="142dp"
         android:layout_height="60dp"
         android:text="Enter"
-
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-
         app:layout_constraintVertical_bias="0.939" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>
