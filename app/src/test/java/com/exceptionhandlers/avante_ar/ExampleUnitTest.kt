@@ -1,4 +1,4 @@
-package com.exceptionhandlers.avantearprototype
+package com.exceptionhandlers.avante_ar
 
 import org.junit.Test
 

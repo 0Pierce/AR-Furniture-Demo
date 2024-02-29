@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.exceptionhandlers.avantearprototype"
+    namespace = "com.exceptionhandlers.avante_ar"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.exceptionhandlers.avantearprototype"
+        applicationId = "com.exceptionhandlers.avante_ar"
         minSdk = 28
         targetSdk = 34
         versionCode = 1
