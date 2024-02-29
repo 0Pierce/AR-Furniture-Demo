@@ -6,16 +6,30 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [LiveViewFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
+
+/*
+*Name: LiveViewFragment
+*
+* ========Authors:========
+* Pierce, Amir, Isaac, Anson
+*
+*
+* ========Description:========
+* Holds the AR viewscene, most AR logic involving detection and so on will be created here
+* TBD
+*
+*
+*
+*
+*
+* ========Primary Functions:========
+*Sceneview viewport inside XML
+* TBD
+*
+*
+
+* */
 class LiveViewFragment : Fragment(R.layout.fragment_live_view) {
 
 }
