@@ -27,12 +27,16 @@ import android.widget.Button
 
 * */
 class LiveViewActivity : AppCompatActivity() {
+
+
+    lateinit var catalogue: LiveViewCatalogue
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_live_view)
 
         val btnBack = findViewById<Button>(R.id.btnBack)
 
+        //Button to go back to Homepage
         btnBack.setOnClickListener{
             startActivity(Intent(this, HomePageActivity::class.java))
 

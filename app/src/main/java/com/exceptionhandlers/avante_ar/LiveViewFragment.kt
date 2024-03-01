@@ -5,7 +5,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
+import com.google.android.filament.Viewport
+import io.github.sceneview.ar.ARSceneView
 
 
 /*
@@ -32,4 +33,11 @@ import android.view.ViewGroup
 * */
 class LiveViewFragment : Fragment(R.layout.fragment_live_view) {
 
+    lateinit var viewport : ARSceneView
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+    }
 }

@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     tools:context=".LiveViewFragment">
 
+    <!--Camera viewport-->
     <io.github.sceneview.ar.ARSceneView
         android:id="@+id/sceneView"
         android:layout_width="match_parent"
