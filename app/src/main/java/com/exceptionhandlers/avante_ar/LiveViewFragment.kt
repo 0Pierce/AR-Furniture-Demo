@@ -40,13 +40,12 @@ import com.google.ar.core.Plane
 class LiveViewFragment : Fragment(R.layout.fragment_live_view) {
 
     lateinit var viewport: ARSceneView
-    val session = Session(context)
-    val config = Config(session)
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-       
+
 
     }
 
