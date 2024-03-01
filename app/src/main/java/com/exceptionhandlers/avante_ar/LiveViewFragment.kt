@@ -7,6 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import com.google.android.filament.Viewport
 import io.github.sceneview.ar.ARSceneView
+import com.google.ar.core.Config
+import com.google.ar.core.Session
+import com.google.ar.core.Plane
+
+
+
 
 
 /*
@@ -33,11 +39,26 @@ import io.github.sceneview.ar.ARSceneView
 * */
 class LiveViewFragment : Fragment(R.layout.fragment_live_view) {
 
-    lateinit var viewport : ARSceneView
+    lateinit var viewport: ARSceneView
+    val session = Session(context)
+    val config = Config(session)
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+    }
+
+    fun objects() {
+        config.planeFindingMode = Config.PlaneFindingMode.HORIZONTAL_AND_VERTICAL
+        session.configure(config)
+        val trackables = session.getAllTrackables(Plane::class.java)
+        if (trackables is Plane) {
+            val planeX = trackables.extentX
+            val planeZ = trackables.extentZ
+            val planesize = planeX * planeZ
+
+        }
 
     }
 }
