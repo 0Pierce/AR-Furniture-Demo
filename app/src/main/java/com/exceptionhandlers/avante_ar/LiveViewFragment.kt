@@ -46,21 +46,9 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        objects()
+       
 
     }
 
-    fun objects() {
-        config.planeFindingMode = Config.PlaneFindingMode.HORIZONTAL_AND_VERTICAL
-        session.configure(config)
-        val trackables = session.getAllTrackables(Plane::class.java)
-        if (trackables is Plane) {
-            val planeX = trackables.extentX
-            val planeZ = trackables.extentZ
-            val planesize = planeX * planeZ
-            print(planesize)
 
-        }
-
-    }
 }
