@@ -46,6 +46,7 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        objects()
 
     }
 
@@ -57,6 +58,7 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view) {
             val planeX = trackables.extentX
             val planeZ = trackables.extentZ
             val planesize = planeX * planeZ
+            print(planesize)
 
         }
 
