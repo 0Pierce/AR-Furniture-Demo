@@ -7,6 +7,9 @@
     tools:context=".LiveViewActivity">
 
     <!--Viewport fragment (AR fragment)-->
+
+    <!--Catalogue fragment-->
+
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/viewFragment"
         android:name="com.exceptionhandlers.avante_ar.LiveViewFragment"
@@ -20,21 +23,20 @@
         app:layout_constraintVertical_bias="1.0"
         tools:layout="@layout/fragment_live_view" />
 
-    <!--Catalogue fragment-->
-
     <ImageButton
         android:id="@+id/imgBtnCatOpen"
         android:layout_width="70dp"
         android:layout_height="73dp"
         android:background="@null"
+        android:rotation="90"
         android:scaleType="fitCenter"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.897"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintVertical_bias="0.975"
         app:srcCompat="@drawable/cat_arrow" />
 
     <Button
@@ -62,13 +64,13 @@
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/catalogueFragment"
         android:name="com.exceptionhandlers.avante_ar.LiveViewCatalogue"
-        android:layout_width="200dp"
-        android:layout_height="match_parent"
-        android:background="#E40101"
+        android:layout_width="match_parent"
+        android:layout_height="340dp"
+        android:background="#40000000"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintVertical_bias="1.0"
         tools:layout="@layout/fragment_live_view_catalogue" />
 
     <ImageButton
@@ -76,14 +78,15 @@
         android:layout_width="70dp"
         android:layout_height="73dp"
         android:background="@null"
+        android:rotation="270"
         android:scaleType="fitCenter"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.618"
+        app:layout_constraintHorizontal_bias="0.897"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintVertical_bias="0.53"
         app:srcCompat="@drawable/cat_arrow" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

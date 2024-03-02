@@ -32,7 +32,7 @@
             android:layout_columnWeight="1"
             app:cardCornerRadius="15dp"
             app:cardElevation="12dp"
-            android:layout_margin="12dp">>
+            android:layout_margin="12dp">
 
 
 
@@ -57,7 +57,7 @@
                   android:textSize="18sp"
                   android:textStyle="bold"
                  android:textColor="@color/black"
-                 android:text="Home"
+                 android:text="@string/objPlaceholder"
                   />
 
             </LinearLayout>
@@ -71,7 +71,7 @@
             android:layout_columnWeight="1"
             app:cardCornerRadius="15dp"
             app:cardElevation="12dp"
-            android:layout_margin="12dp">>
+            android:layout_margin="12dp">
 
 
 
@@ -96,7 +96,7 @@
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="@color/black"
-                    android:text="Home"
+                    android:text="@string/objPlaceholder"
                     />
 
             </LinearLayout>
@@ -110,7 +110,7 @@
             android:layout_columnWeight="1"
             app:cardCornerRadius="15dp"
             app:cardElevation="12dp"
-            android:layout_margin="12dp">>
+            android:layout_margin="12dp">
 
 
 
@@ -135,7 +135,7 @@
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="@color/black"
-                    android:text="Home"
+                    android:text="@string/objPlaceholder"
                     />
 
             </LinearLayout>
@@ -149,7 +149,7 @@
             android:layout_columnWeight="1"
             app:cardCornerRadius="15dp"
             app:cardElevation="12dp"
-            android:layout_margin="12dp">>
+            android:layout_margin="12dp">
 
 
 
@@ -174,7 +174,7 @@
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="@color/black"
-                    android:text="Home"
+                    android:text="@string/objPlaceholder"
                     />
 
             </LinearLayout>
@@ -213,7 +213,7 @@
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="@color/black"
-                    android:text="Home"
+                    android:text="@string/objPlaceholder"
                     />
 
             </LinearLayout>
@@ -227,7 +227,7 @@
             android:layout_columnWeight="1"
             app:cardCornerRadius="15dp"
             app:cardElevation="12dp"
-            android:layout_margin="12dp">>
+            android:layout_margin="12dp">
 
 
 
@@ -252,7 +252,7 @@
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="@color/black"
-                    android:text="Home"
+                    android:text="@string/objPlaceholder"
                     />
 
             </LinearLayout>

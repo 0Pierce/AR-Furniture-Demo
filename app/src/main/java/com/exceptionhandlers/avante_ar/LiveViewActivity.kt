@@ -52,7 +52,7 @@ class LiveViewActivity : AppCompatActivity() {
         val btnCatClose = findViewById<ImageButton>(R.id.imgBtnCatClose)
         catalogue.isVisible = false
 
-        btnCatClose.scaleX = -1f
+
 
         btnCatOpen.setOnClickListener{
             catalogue.isVisible = true
