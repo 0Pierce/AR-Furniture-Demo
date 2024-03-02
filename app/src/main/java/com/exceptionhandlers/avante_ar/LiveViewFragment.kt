@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
@@ -16,10 +17,13 @@ import com.google.ar.core.Config
 import com.google.ar.core.Session
 import com.google.ar.core.Plane
 import com.google.ar.core.TrackingFailureReason
+import com.google.ar.core.exceptions.NotYetAvailableException
 import io.github.sceneview.ar.arcore.getUpdatedPlanes
 import io.github.sceneview.ar.getDescription
 import io.github.sceneview.ar.node.AnchorNode
+import io.github.sceneview.ar.scene.PlaneRenderer
 import io.github.sceneview.math.Position
+import io.github.sceneview.math.Size
 import io.github.sceneview.node.ModelNode
 import kotlinx.coroutines.launch
 
@@ -108,9 +112,14 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
         sceneViewPort = view.findViewById<ARSceneView?>(R.id.sceneViewLive).apply {
             //Fairly simple, just enables planes to be rendered
             planeRenderer.isEnabled = true
+
+            //Renders all  planes
+            planeRenderer.planeRendererMode = PlaneRenderer.PlaneRendererMode.RENDER_ALL
+
             //Modifies session and sets a automatic depthMode
             //Meaning the mode will activate depending on the phones hardware and if its supported
-            //From what I understand DepthMode uses the depth API for detection
+            //From what I understand DepthMode uses the full depth API for detection (actual name)
+            //Theres two types, raw depth API and full depth API
             configureSession { session, config ->
                 config.depthMode = when (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC)) {
                     true -> Config.DepthMode.AUTOMATIC
@@ -122,7 +131,18 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
                 config.instantPlacementMode = Config.InstantPlacementMode.DISABLED
                 //Enables HDR light estimation
                 config.lightEstimationMode = Config.LightEstimationMode.ENVIRONMENTAL_HDR
+
+                //config.setUpdateMode(Config.UpdateMode.LATEST_CAMERA_IMAGE)
+                config.planeFindingMode = Config.PlaneFindingMode.HORIZONTAL_AND_VERTICAL
+
+                //Enables object detection
+                //config.semanticMode = Config.SemanticMode.ENABLED
+
+
+
             }
+
+
 
             //On every new frame, it places an anchor, once enough anchors are placed a plane is rendered
             onSessionUpdated = { _, frame ->
@@ -137,6 +157,8 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
                             addAnchorNode(plane.createAnchor(plane.centerPose))
                         }
                 }
+
+
             }
             //Self explanatory
             onTrackingFailureChanged = { reason ->
@@ -146,27 +168,17 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
+
+
 
     //Adding a new anchor based on a anchor position
     fun addAnchorNode(anchor: Anchor) {
+        Toast.makeText(context, "Anchor", Toast.LENGTH_SHORT).show()
         sceneViewPort.addChildNode(
             //AnchorNode constructor call, passing along the viewPort engine and anchor position
             //then applying the following to that object
+            
             AnchorNode(sceneViewPort.engine, anchor)
                 .apply {
                     isEditable = true
@@ -179,6 +191,7 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
                         //Raises the loading flag
                         isLoading = true
                         //Loads in the placeholder helmet model
+                       
                         sceneViewPort.modelLoader.loadModelInstance(
                             "https://sceneview.github.io/assets/models/DamagedHelmet.glb"
                             //UNSURE: Makes the model scalable and adjustable?
@@ -190,6 +203,7 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
                                     scaleToUnits = 0.5f,
                                     // Bottom origin instead of center so the model base is on floor
                                     centerOrigin = Position(y = -0.5f)
+                                    
                                 ).apply {
                                     isEditable = true
                                 }
