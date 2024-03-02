@@ -7,10 +7,12 @@
     tools:context=".LiveViewFragment">
 
     <!--Camera viewport-->
+
     <io.github.sceneview.ar.ARSceneView
         android:id="@+id/sceneViewLive"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:textAlignment="center" />
 
     <FrameLayout
         android:id="@+id/loadingView"
@@ -34,10 +36,11 @@
 
     <TextView
         android:id="@+id/instructionText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="29dp"
         android:layout_marginTop="44dp"
         android:text="Point the phone at an empty space"
+        android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
