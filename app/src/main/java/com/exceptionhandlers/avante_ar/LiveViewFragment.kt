@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import com.google.android.filament.Viewport
 import io.github.sceneview.ar.ARSceneView
 import com.google.ar.core.Config
@@ -37,14 +38,25 @@ import com.google.ar.core.Plane
 *
 
 * */
-class LiveViewFragment : Fragment(R.layout.fragment_live_view) {
+class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
 
-    lateinit var viewport: ARSceneView
+    lateinit var sceneViewPort: ARSceneView
 
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
+
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+
+        sceneViewPort = view.findViewById(R.id.sceneViewLive)
+
 
 
     }
