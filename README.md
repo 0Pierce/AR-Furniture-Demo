@@ -3,7 +3,7 @@ An Android Augmented Reality app designed to let users place furniture and other
 
 
 # Navigating the project 
-To find the src files of the project navigate to ``` app -> main -> java/com/exceptionhandlers/avante_ar```
+To find the src files of the project navigate to ``` app -> src -> main -> java/com/exceptionhandlers/avante_ar```
 To find used resources such as the xml layout files, images, and 3D objects navigate to ``` app -> src -> res ```
 
 We have two branches ``` production ``` is our stable and fully tested branch, which holds older versions of the project.
