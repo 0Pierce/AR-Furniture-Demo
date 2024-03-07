@@ -6,6 +6,9 @@ plugins {
 android {
     namespace = "com.exceptionhandlers.avante_ar"
     compileSdk = 34
+    buildFeatures {
+        viewBinding = true
+    }
 
     defaultConfig {
         applicationId = "com.exceptionhandlers.avante_ar"

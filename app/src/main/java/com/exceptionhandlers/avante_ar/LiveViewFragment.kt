@@ -7,9 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import android.widget.ToggleButton
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
+import com.exceptionhandlers.avante_ar.databinding.ActivityLiveViewBinding
 import com.google.android.filament.Viewport
 import com.google.ar.core.Anchor
 import io.github.sceneview.ar.ARSceneView
@@ -55,7 +58,11 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
     lateinit var sceneViewPort: ARSceneView
     lateinit var loadingView: View
     lateinit var instructionText: TextView
+    lateinit var depthBtn : ToggleButton
 
+    //Activity binding
+    //Simply put, lets us access XML layouts of other activities
+    private lateinit var LiveViewbind: ActivityLiveViewBinding
 
     //Used as a flag and displaying loading icon (Not showing rn)
     var isLoading = false
@@ -99,8 +106,19 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
 
     }
 
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        //Gets the layout of LiveViewActivity
+        LiveViewbind = ActivityLiveViewBinding.inflate(layoutInflater)
+
+
+
+
+
+
 
         //Gets the instruction Text ID(Changes text at top of screen nothing else)
         instructionText = view.findViewById(R.id.instructionText)
@@ -123,6 +141,7 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
             configureSession { session, config ->
                 config.depthMode = when (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC)) {
                     true -> Config.DepthMode.AUTOMATIC
+
                     //disables DepthMode if the device does not support it
                     else -> Config.DepthMode.DISABLED
                 }
@@ -137,6 +156,7 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
 
                 //Enables object detection
                 //config.semanticMode = Config.SemanticMode.ENABLED
+                depthBtn = LiveViewbind.tglBtnDepthAPI
 
 
 
@@ -170,7 +190,10 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
 
     }
 
+    fun depthAPI(view : ARSceneView, session: Session, config : Config){
 
+
+    }
 
     //Adding a new anchor based on a anchor position
     fun addAnchorNode(anchor: Anchor) {

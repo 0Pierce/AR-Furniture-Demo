@@ -20,7 +20,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"
+        app:layout_constraintVertical_bias="0.0"
         tools:layout="@layout/fragment_live_view" />
 
     <ImageButton
@@ -49,18 +49,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.976" />
 
-    <Button
-        android:id="@+id/button4"
-        android:layout_width="120dp"
-        android:layout_height="60dp"
-        android:text="Depth API"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.146"
-        app:layout_constraintStart_toEndOf="@+id/btnBack"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.976" />
-
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/catalogueFragment"
         android:name="com.exceptionhandlers.avante_ar.LiveViewCatalogue"
@@ -71,7 +59,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0"
-        tools:layout="@layout/fragment_live_view_catalogue" />
+        tools:layout="@layout/fragment_live_view_catalogue"
+        tools:visibility="invisible" />
 
     <ImageButton
         android:id="@+id/imgBtnCatClose"
@@ -89,6 +78,20 @@
         app:layout_constraintVertical_bias="0.571"
         app:srcCompat="@drawable/cat_arrow" />
 
+    <ToggleButton
+        android:id="@+id/tglBtnDepthAPI"
+        android:layout_width="106dp"
+        android:layout_height="64dp"
+        android:layout_marginEnd="48dp"
+        android:text="ToggleButton"
+        android:textOff="Turn on depth"
+        android:textOn="Turn off depth"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/imgBtnCatOpen"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/btnBack"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.976" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
