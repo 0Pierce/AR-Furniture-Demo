@@ -27,6 +27,14 @@ The other branch is ``` development ``` which holds the most up-to-date version 
  # Resources
  We did a lot of research on what kind of libraries and APIs we need to consider adding to make our lives a little easier. The following are the resources that we are actively using within the project. We will most likely expand this list as we continue
 
-*
+* [ARCore](https://developers.google.com/ar)
+  -ARCore is Google’s augmented reality SDK offering cross-platform APIs to build new immersive experiences on Android, iOS, Unity, and Web
+  -The workhorse of the app, lays a foundation for all AR capabilities which can be built upon
+
+* [SceneView Library](https://github.com/SceneView/sceneview-android)
+  -3D and AR Android @Composable and layout view with Google Filament and ARCore
+  -Handles the rendering of 3D objects within the viewport
+
+
  
 
