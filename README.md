@@ -1,5 +1,5 @@
 # Avante-AR 
-An Android Augmented Reality app designed to let a user place furniture and other objects into an empty room using precise measurements
+An Android Augmented Reality app designed to let users place furniture and other objects into an empty room using precise measurements
 
 
 # Navigating the project 
