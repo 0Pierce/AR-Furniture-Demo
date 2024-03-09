@@ -99,24 +99,14 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
             null
         }
     }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    //LiveViewbind = ActivityLiveViewBinding.inflate(layoutInflater)
 
 
-    }
 
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        //Gets the layout of LiveViewActivity
-        LiveViewbind = ActivityLiveViewBinding.inflate(layoutInflater)
-
-
-
-
 
 
 
@@ -156,7 +146,7 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
 
                 //Enables object detection
                 //config.semanticMode = Config.SemanticMode.ENABLED
-                depthBtn = LiveViewbind.tglBtnDepthAPI
+                //depthBtn = LiveViewbind.tglBtnDepthAPI
 
 
 
