@@ -12,8 +12,7 @@ class LiveViewCatalogue : Fragment(R.layout.fragment_live_view_catalogue) {
 
 }
 
-// Need to add drawable items
-// Add item set for arrows once I get back home
+
 // Create New assets folder for assets + add Android Resource Directory (models)
 // Paste assets into the folder (need to get our assets) (shelf, lamp, bed, cabinet, etc)
 // Drawable files with the models too (ex.. burger.webp, shelf.webp, lamp.webp)
@@ -22,7 +21,7 @@ class LiveViewCatalogue : Fragment(R.layout.fragment_live_view_catalogue) {
 fun Menu(modifer: Modifier){
     val itemsList = listOf(
         Furniture(name ="shelf", imageID = R.drawable.shelf, path = "drawable/shelf"),
-        Furniture(name ="lamp", imageID = R.drawable.lamp, path = ""),
+        Furniture(name ="lamp", imageID = R.drawable.sofa, path = ""),
         Furniture(name ="bed", imageID = R.drawable.bed, path = ""),
         Furniture(name ="cabinet", imageID = R.drawable.cabinet, path = ""),
         Furniture(name ="mirror", imageID = R.drawable.mirror, path = ),
@@ -44,20 +43,6 @@ fun Menu(modifer: Modifier){
 
     }
 }
-
-
-@Composable
-fun CircularImage(
-    modifier: Modifier=Modifier,
-    imageId: Int
-){
-    Box(modifier = modifier
-        .size(140dp)
-        .clip(CircleShape)
-    ){ this:}
-
-}
-    }
 
 
 data class Furniture(var name:String, var imageID:Int, var path: String)
