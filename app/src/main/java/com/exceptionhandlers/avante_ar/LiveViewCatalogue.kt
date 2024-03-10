@@ -26,7 +26,6 @@ fun Menu(modifer: Modifier){
         Furniture(name ="bed", imageID = R.drawable.bed, path = ""),
         Furniture(name ="cabinet", imageID = R.drawable.cabinet, path = ""),
         Furniture(name ="mirror", imageID = R.drawable.mirror, path = ),
-
     )
     Row(modifier = modifier.fillMaxWidth(),
         verticalAlightment = Alignment.CenterVertically,
@@ -37,7 +36,27 @@ fun Menu(modifer: Modifier){
                 Icon(painter = painterResource(id = R.drawable.baseline_arrow_back_ios_24), contentDescription = "previous")
             }
 
+
+        IconButton(onClick = {/*TODO*/}) {
+            Icon(painter = painterResource(id = R.drawable.baseline_arrow_forward_ios_24, contentDescription = "next")
         }
+
+
+    }
+}
+
+
+@Composable
+fun CircularImage(
+    modifier: Modifier=Modifier,
+    imageId: Int
+){
+    Box(modifier = modifier
+        .size(140dp)
+        .clip(CircleShape)
+    ){ this:}
+
+}
     }
 
 
