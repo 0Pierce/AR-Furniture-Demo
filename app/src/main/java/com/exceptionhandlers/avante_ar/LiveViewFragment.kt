@@ -63,6 +63,8 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
     lateinit var loadingView: View
     lateinit var instructionText: TextView
     lateinit var depthBtn : ToggleButton
+    private var anchorCount = 0
+    private var anchorPositions = mutableListOf<Position>()
 
     //Activity binding
     //Simply put, lets us access XML layouts of other activities
@@ -112,10 +114,7 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        sceneViewPort.setOnTouchListener { _, event ->
-            handleTouchEvent(event)
-            true
-        }
+
 
 
         //Gets the instruction Text ID(Changes text at top of screen nothing else)
@@ -193,30 +192,38 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
             }
         }
 
-
+        sceneViewPort.setOnTouchListener { _, event ->
+            handleTouchEvent(event)
+            true
+        }
 
     }
 
     private fun handleTouchEvent(event: MotionEvent) {
-        if (event.action == MotionEvent.ACTION_DOWN) {
+        if (event.action == MotionEvent.ACTION_DOWN && anchorCount < 2) {
             try {
-                // Perform a hit test at the touch location
                 val hitResult = sceneViewPort.frame?.hitTest(event.x, event.y)?.firstOrNull()
 
                 hitResult?.let {
-                    // Create an anchor at the hit location
                     val anchor = sceneViewPort.session?.createAnchor(hitResult.hitPose)
+
                     anchor?.let { addAnchorNode(it) }
                 }
             } catch (e: NotYetAvailableException) {
-                // Handle exception if ARFrame or ARSession is not available yet
                 e.printStackTrace()
             }
         }
     }
 
 
+    private fun calculateDistance(position1: Position, position2: Position): Float {
+        val deltaX = position2.x - position1.x
+        val deltaY = position2.y - position1.y
+        val deltaZ = position2.z - position1.z
 
+        // Calculate the distance using the Pythagorean theorem
+        return kotlin.math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ)
+    }
 
     //Adding a new anchor based on a anchor position
     fun addAnchorNode(anchor: Anchor) {
@@ -224,7 +231,7 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
         sceneViewPort.addChildNode(
             //AnchorNode constructor call, passing along the viewPort engine and anchor position
             //then applying the following to that object
-            
+
             AnchorNode(sceneViewPort.engine, anchor)
                 .apply {
                     isEditable = true
@@ -237,7 +244,7 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
                         //Raises the loading flag
                         isLoading = true
                         //Loads in the placeholder helmet model
-                       
+
                         sceneViewPort.modelLoader.loadModelInstance(
                             "https://sceneview.github.io/assets/models/DamagedHelmet.glb"
                             //UNSURE: Makes the model scalable and adjustable?
@@ -249,7 +256,7 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
                                     scaleToUnits = 0.5f,
                                     // Bottom origin instead of center so the model base is on floor
                                     centerOrigin = Position(y = -0.5f)
-                                    
+
                                 ).apply {
                                     isEditable = true
                                 }
@@ -261,6 +268,19 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
                     anchorNode = this
                 }
         )
+        val position = Position(anchor.pose.tx(), anchor.pose.ty(), anchor.pose.tz())
+        anchorPositions.add(position)
+
+        anchorCount++
+
+        // Update instructions or perform any other actions when the limit is reached
+        if (anchorCount >= 2) {
+            instructionText.text = getString(R.string.max_anchors_reached)
+
+            // Calculate and display the distance between the two anchors
+            val distance = calculateDistance(anchorPositions[0], anchorPositions[1])
+            Toast.makeText(context, "Distance: $distance meters", Toast.LENGTH_SHORT).show()
+        }
     }
 
 
