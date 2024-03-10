@@ -33,7 +33,8 @@ fun Menu(modifer: Modifier){
         horizontalArrangement = Arrangement.SpaceAround
         ) { this:Rowscope
             IconButton(onClick = {/*TODO*/}) {
-                Icon(painter = painterResource(id = R.drawable.baseline_arrow_back_ios_24))
+                // Need to add android icon buttons in a bit for the back in front arrows
+                Icon(painter = painterResource(id = R.drawable.baseline_arrow_back_ios_24), contentDescription = "previous")
             }
 
         }
