@@ -21,11 +21,11 @@ class LiveViewCatalogue : Fragment(R.layout.fragment_live_view_catalogue) {
 @Composable
 fun Menu(modifer: Modifier){
     val itemsList = listOf(
-        Furniture(name:"shelf", R.drawable.shelf),
-        Furniture(name:"lamp", R.drawable.lamp),
-        Furniture(name:"bed", R.drawable.bed),
-        Furniture(name:"cabinet", R.drawable.cabinet),
-        Furniture(name:"mirror", R.drawable.mirror),
+        Furniture(name ="shelf", imageID = R.drawable.shelf, path = "drawable/shelf"),
+        Furniture(name ="lamp", imageID = R.drawable.lamp, path = ""),
+        Furniture(name ="bed", imageID = R.drawable.bed, path = ""),
+        Furniture(name ="cabinet", imageID = R.drawable.cabinet, path = ""),
+        Furniture(name ="mirror", imageID = R.drawable.mirror, path = ),
 
     )
     Row(modifier = modifier.fillMaxWidth(),
@@ -40,4 +40,4 @@ fun Menu(modifer: Modifier){
     }
 
 
-data class Furniture(var name:String, var imageID:Int)
+data class Furniture(var name:String, var imageID:Int, var path: String)
