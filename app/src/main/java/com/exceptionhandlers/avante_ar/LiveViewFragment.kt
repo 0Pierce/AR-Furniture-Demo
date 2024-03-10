@@ -1,5 +1,6 @@
 package com.exceptionhandlers.avante_ar
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -111,6 +112,7 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
 
 
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -225,9 +227,13 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
         return kotlin.math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ)
     }
 
+
+    private var anchorsWithNodes = mutableListOf<Pair<AnchorNode, Position>>()
+
     //Adding a new anchor based on a anchor position
     fun addAnchorNode(anchor: Anchor) {
         Toast.makeText(context, "Anchor", Toast.LENGTH_SHORT).show()
+
         sceneViewPort.addChildNode(
             //AnchorNode constructor call, passing along the viewPort engine and anchor position
             //then applying the following to that object
@@ -269,16 +275,17 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
                 }
         )
         val position = Position(anchor.pose.tx(), anchor.pose.ty(), anchor.pose.tz())
-        anchorPositions.add(position)
+        val anchorNodePair = Pair(anchorNode, position)
+        anchorsWithNodes.add(anchorNodePair as Pair<AnchorNode, Position>)
 
         anchorCount++
 
-        // Update instructions or perform any other actions when the limit is reached
+// Update instructions or perform any other actions when the limit is reached
         if (anchorCount >= 2) {
             instructionText.text = getString(R.string.max_anchors_reached)
 
             // Calculate and display the distance between the two anchors
-            val distance = calculateDistance(anchorPositions[0], anchorPositions[1])
+            val distance = calculateDistance(anchorsWithNodes[0].second, anchorsWithNodes[1].second)
             Toast.makeText(context, "Distance: $distance meters", Toast.LENGTH_SHORT).show()
         }
     }
