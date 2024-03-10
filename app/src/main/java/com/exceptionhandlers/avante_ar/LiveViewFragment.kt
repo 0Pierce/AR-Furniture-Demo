@@ -120,9 +120,14 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
         sceneViewPort = view.findViewById<ARSceneView?>(R.id.sceneViewLive).apply {
             //Fairly simple, just enables planes to be rendered
             planeRenderer.isEnabled = true
+            planeRenderer.isShadowReceiver = false
+            cameraStream!!.isDepthOcclusionEnabled = true
+
+            //Unsure may need to remove
+            //cameraStream!!.setCulling(true)
 
             //Renders all  planes
-            planeRenderer.planeRendererMode = PlaneRenderer.PlaneRendererMode.RENDER_ALL
+            //planeRenderer.planeRendererMode = PlaneRenderer.PlaneRendererMode.RENDER_ALL
 
             //Modifies session and sets a automatic depthMode
             //Meaning the mode will activate depending on the phones hardware and if its supported
@@ -139,7 +144,7 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
                 //No instant placements (Guessing objects cannot snap?)
                 config.instantPlacementMode = Config.InstantPlacementMode.DISABLED
                 //Enables HDR light estimation
-                config.lightEstimationMode = Config.LightEstimationMode.ENVIRONMENTAL_HDR
+                //config.lightEstimationMode = Config.LightEstimationMode.ENVIRONMENTAL_HDR
 
                 //config.setUpdateMode(Config.UpdateMode.LATEST_CAMERA_IMAGE)
                 config.planeFindingMode = Config.PlaneFindingMode.HORIZONTAL_AND_VERTICAL
@@ -185,6 +190,9 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
 
     }
 
+
+
+
     //Adding a new anchor based on a anchor position
     fun addAnchorNode(anchor: Anchor) {
         Toast.makeText(context, "Anchor", Toast.LENGTH_SHORT).show()
@@ -229,5 +237,7 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
                 }
         )
     }
+
+
 
 }
