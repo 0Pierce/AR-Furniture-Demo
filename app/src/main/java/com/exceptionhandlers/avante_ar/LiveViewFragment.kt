@@ -28,7 +28,11 @@ import io.github.sceneview.ar.scene.PlaneRenderer
 import io.github.sceneview.math.Position
 import io.github.sceneview.math.Size
 import io.github.sceneview.node.ModelNode
+import io.github.sceneview.rememberOnGestureListener
 import kotlinx.coroutines.launch
+import io.github.sceneview.rememberOnGestureListener
+import android.view.MotionEvent
+
 
 
 /*
@@ -108,6 +112,10 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        sceneViewPort.setOnTouchListener { _, event ->
+            handleTouchEvent(event)
+            true
+        }
 
 
         //Gets the instruction Text ID(Changes text at top of screen nothing else)
@@ -121,7 +129,11 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
             //Fairly simple, just enables planes to be rendered
             planeRenderer.isEnabled = true
             planeRenderer.isShadowReceiver = false
-            cameraStream!!.isDepthOcclusionEnabled = true
+
+            //Buggy
+            //cameraStream!!.isDepthOcclusionEnabled = true
+
+
 
             //Unsure may need to remove
             //cameraStream!!.setCulling(true)
@@ -147,7 +159,7 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
                 //config.lightEstimationMode = Config.LightEstimationMode.ENVIRONMENTAL_HDR
 
                 //config.setUpdateMode(Config.UpdateMode.LATEST_CAMERA_IMAGE)
-                config.planeFindingMode = Config.PlaneFindingMode.HORIZONTAL_AND_VERTICAL
+                //config.planeFindingMode = Config.PlaneFindingMode.HORIZONTAL_AND_VERTICAL
 
                 //Enables object detection
                 //config.semanticMode = Config.SemanticMode.ENABLED
@@ -185,9 +197,22 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
 
     }
 
-    fun depthAPI(view : ARSceneView, session: Session, config : Config){
+    private fun handleTouchEvent(event: MotionEvent) {
+        if (event.action == MotionEvent.ACTION_DOWN) {
+            try {
+                // Perform a hit test at the touch location
+                val hitResult = sceneViewPort.frame?.hitTest(event.x, event.y)?.firstOrNull()
 
-
+                hitResult?.let {
+                    // Create an anchor at the hit location
+                    val anchor = sceneViewPort.session?.createAnchor(hitResult.hitPose)
+                    anchor?.let { addAnchorNode(it) }
+                }
+            } catch (e: NotYetAvailableException) {
+                // Handle exception if ARFrame or ARSession is not available yet
+                e.printStackTrace()
+            }
+        }
     }
 
 
