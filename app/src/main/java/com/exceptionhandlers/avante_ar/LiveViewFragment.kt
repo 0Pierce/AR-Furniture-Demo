@@ -134,7 +134,7 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
         super.onViewCreated(view, savedInstanceState)
 
 
-        var grid = binding2.topGrid
+
         //Gets the instruction Text ID(Changes text at top of screen nothing else)
         instructionText = view.findViewById(R.id.instructionText)
         instructionText = view.findViewById(R.id.instructionText)
@@ -215,6 +215,19 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
             handleTouchEvent(event)
             true
         }
+
+        //Not working yet
+        var card1 = binding2.lyCard1
+
+        card1.setOnClickListener{
+            Toast.makeText(context, "Clicked", Toast.LENGTH_LONG).show()
+
+            sceneViewPort.setOnTouchListener { _, event ->
+                handleTouchEvent(event)
+                true
+            }
+        }
+
 
     }
 
@@ -307,10 +320,7 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
             Toast.makeText(context, "Distance: $distance meters", Toast.LENGTH_SHORT).show()
         }
     }
-    fun onSofaClick(view: View) {
-        // Add sofa to AR scene
 
-    }
     fun onShelfClick(view: View) {
         // Add shelf to AR scene
 
