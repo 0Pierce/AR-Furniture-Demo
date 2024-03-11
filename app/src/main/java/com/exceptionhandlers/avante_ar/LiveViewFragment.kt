@@ -289,6 +289,14 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
             Toast.makeText(context, "Distance: $distance meters", Toast.LENGTH_SHORT).show()
         }
     }
+    fun onSofaClick(view: View) {
+        // Add sofa to AR scene
+
+    }
+    fun onShelfClick(view: View) {
+        // Add shelf to AR scene
+
+    }
 
 
 

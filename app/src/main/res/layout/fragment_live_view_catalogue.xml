@@ -47,10 +47,12 @@
                 android:background="@color/white">
 
              <ImageView
-                  android:layout_width="80dp"
-                   android:layout_height="80dp"
-                   android:src="@drawable/obj_placeholder"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:src="@drawable/sofa"
                     android:layout_gravity="center"
+                    android:clickable="true"
+                    android:onClick="onSofaClick"
                    />
 
              <TextView
@@ -89,8 +91,10 @@
                 <ImageView
                     android:layout_width="80dp"
                     android:layout_height="80dp"
-                    android:src="@drawable/obj_placeholder"
+                    android:src="@drawable/shelf"
                     android:layout_gravity="center"
+                    android:clickable="true"
+                    android:onClick="onShelfClick"
                     />
 
                 <TextView
