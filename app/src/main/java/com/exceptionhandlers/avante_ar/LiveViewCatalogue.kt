@@ -14,9 +14,6 @@ class LiveViewCatalogue : Fragment(R.layout.fragment_live_view_catalogue) {
             Furniture(name ="shelf", imageID = R.drawable.shelf, path = "drawable/shelf"),
             Furniture(name ="lamp", imageID = R.drawable.sofa, path = ""),
             Furniture(name ="bed", imageID = R.drawable.bed, path = ""),
-            Furniture(name ="cabinet", imageID = R.drawable.cabinet, path = ""),
-            Furniture(name ="mirror", imageID = R.drawable.mirror, path = ),
-
 }
 
     data class Furniture(var name:String, var imageID:Int, var path: String)
