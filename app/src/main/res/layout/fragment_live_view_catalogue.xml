@@ -47,14 +47,14 @@
                     android:layout_height="80dp"
                     android:layout_gravity="center"
                     android:clickable="true"
-
-                    android:src="@drawable/sofa" />
+                    android:src="@drawable/sofa"
+                    android:contentDescription="sofa" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="@string/objPlaceholder"
+                    android:text="@string/sofa"
                     android:textColor="@color/black"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -88,8 +88,7 @@
                     android:src="@drawable/shelf"
                     android:layout_gravity="center"
                     android:clickable="true"
-                    android:onClick="onShelfClick"
-                    />
+                    android:contentDescription="@string/shelf" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -98,7 +97,7 @@
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="@color/black"
-                    android:text="@string/objPlaceholder"
+                    android:text="@string/shelf"
                     />
 
             </LinearLayout>
