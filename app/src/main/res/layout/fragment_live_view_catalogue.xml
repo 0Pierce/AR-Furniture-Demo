@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".LiveViewCatalogue"
-    tools:viewBindingIgnore="true"
+
     >
 
     <!-- TODO: Update blank fragment layout -->
@@ -21,9 +21,7 @@
         android:rowCount="4"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:layout_marginTop="-8dp"
-
-        >
+        android:layout_marginTop="-8dp">
 
         <androidx.cardview.widget.CardView
             android:layout_width="150dp"

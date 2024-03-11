@@ -2,38 +2,31 @@ package com.exceptionhandlers.avante_ar
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import android.widget.ToggleButton
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isGone
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.exceptionhandlers.avante_ar.databinding.ActivityLiveViewBinding
-import com.google.android.filament.Viewport
+import com.exceptionhandlers.avante_ar.databinding.FragmentLiveViewBinding
+import com.exceptionhandlers.avante_ar.databinding.FragmentLiveViewCatalogueBinding
 import com.google.ar.core.Anchor
-import io.github.sceneview.ar.ARSceneView
 import com.google.ar.core.Config
-import com.google.ar.core.Session
 import com.google.ar.core.Plane
 import com.google.ar.core.TrackingFailureReason
 import com.google.ar.core.exceptions.NotYetAvailableException
+import io.github.sceneview.ar.ARSceneView
 import io.github.sceneview.ar.arcore.getUpdatedPlanes
 import io.github.sceneview.ar.getDescription
 import io.github.sceneview.ar.node.AnchorNode
-import io.github.sceneview.ar.scene.PlaneRenderer
 import io.github.sceneview.math.Position
-import io.github.sceneview.math.Size
 import io.github.sceneview.node.ModelNode
-import io.github.sceneview.rememberOnGestureListener
 import kotlinx.coroutines.launch
-import io.github.sceneview.rememberOnGestureListener
-import android.view.MotionEvent
-
 
 
 /*
@@ -60,6 +53,9 @@ import android.view.MotionEvent
 * */
 class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
 
+
+
+
     lateinit var sceneViewPort: ARSceneView
     lateinit var loadingView: View
     lateinit var instructionText: TextView
@@ -69,7 +65,7 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
 
     //Activity binding
     //Simply put, lets us access XML layouts of other activities
-    private lateinit var LiveViewbind: ActivityLiveViewBinding
+
 
     //Used as a flag and displaying loading icon (Not showing rn)
     var isLoading = false
@@ -106,20 +102,41 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
             null
         }
     }
-    //LiveViewbind = ActivityLiveViewBinding.inflate(layoutInflater)
 
 
+    //private lateinit var LiveViewbind: ActivityLiveViewBinding
+    //Main bindning of the fragment
+    private var _binding1: FragmentLiveViewBinding? = null
 
+    //The binding to the catalogue
+    private var _binding2: FragmentLiveViewCatalogueBinding? = null
 
+    private val binding1 get() = _binding1!!
+    private val binding2 get() = _binding2!!
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        _binding1 = FragmentLiveViewBinding.inflate(inflater, container, false)
+        _binding2 = FragmentLiveViewCatalogueBinding.inflate(inflater, container, false)
+        return binding1.root  // Return the root view of the first layout
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding1 = null
+        _binding2 = null
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
 
-
-
+        var grid = binding2.topGrid
         //Gets the instruction Text ID(Changes text at top of screen nothing else)
+        instructionText = view.findViewById(R.id.instructionText)
         instructionText = view.findViewById(R.id.instructionText)
         //A loading icon that indicates plane scan (Currently not visible)
         //Acts as a flag for other components
@@ -157,13 +174,13 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
                 //No instant placements (Guessing objects cannot snap?)
                 config.instantPlacementMode = Config.InstantPlacementMode.DISABLED
                 //Enables HDR light estimation
-                //config.lightEstimationMode = Config.LightEstimationMode.ENVIRONMENTAL_HDR
+                config.lightEstimationMode = Config.LightEstimationMode.ENVIRONMENTAL_HDR
 
                 //config.setUpdateMode(Config.UpdateMode.LATEST_CAMERA_IMAGE)
                 //config.planeFindingMode = Config.PlaneFindingMode.HORIZONTAL_AND_VERTICAL
 
                 //Enables object detection
-                //config.semanticMode = Config.SemanticMode.ENABLED
+                config.semanticMode = Config.SemanticMode.ENABLED
                 //depthBtn = LiveViewbind.tglBtnDepthAPI
 
 
@@ -218,6 +235,7 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
     }
 
 
+    //Old greek guy equation
     private fun calculateDistance(position1: Position, position2: Position): Float {
         val deltaX = position2.x - position1.x
         val deltaY = position2.y - position1.y
