@@ -217,7 +217,7 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
         }
 
         //Not working yet
-        var card1 = binding2.lyCard1
+        val card1 = binding2.lyCard1
 
         card1.setOnClickListener{
             Toast.makeText(context, "Clicked", Toast.LENGTH_LONG).show()

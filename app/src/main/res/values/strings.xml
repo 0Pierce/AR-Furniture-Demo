@@ -13,6 +13,4 @@
     <string name="best_placement">Best Placement</string>
     <string name="point_your_phone_down">Point your phone down at an empty space, and move it around slowly</string>
     <string name="max_anchors_reached">Max reached</string>
-    <string name="sofa">Sofa</string>
-    <string name="shelf">Shelf</string>
 </resources>
