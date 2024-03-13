@@ -3,10 +3,10 @@
 //the largest unit will be 1m blocks
 
 internal class Point {
-    val x : Double
-    val y : Double
-    val z : Double
-    val confidence : Double
+    protected val x : Double
+    protected val y : Double
+    protected val z : Double
+    protected val confidence : Double
 
     class Point constructor(var x1: Double, var y1: Double, var z1: Double, var c: Double) {
         init {
