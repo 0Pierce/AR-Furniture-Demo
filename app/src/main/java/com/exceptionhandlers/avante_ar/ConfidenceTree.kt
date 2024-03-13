@@ -36,6 +36,7 @@ internal class Chunk {
     protected val leaf = true //will always be a leaf on init, until split further
 
     protected val sideLength : Double
+    protected val origin: Triple<Double> // coordinate with the least x/y/z possible in a chunk
 
     protected val elements : Vector<Point> //always keeps track of what elements are inside
 
@@ -51,9 +52,12 @@ internal class Chunk {
     protected val confres : Double //if we compare 2 points by confidence, how close is close enough?
 
 
-    class Chunk constructor(var sl: Double, var res: Double) {
+    class Chunk constructor(var sl: Double, var og: Triple<Double>, var res: Double, var cres: Double) {
         init {
             this.sideLength = sl
+            this.origin = og
+            this.resolution = res
+            this.confres = cres
         }
     }
 
