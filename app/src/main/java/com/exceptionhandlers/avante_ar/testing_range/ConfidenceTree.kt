@@ -1,23 +1,16 @@
+import kotlin.math.abs
+
 //going to try making a modified quadrant tree for confidence points
 //was originally going for a kd-tree, but the quadrant tree would probably be less confusing to use
 //the largest unit will be 1m blocks
 
-internal class Point {
-    protected var x : Double
-    protected var y : Double
-    protected var z : Double
-    protected var confidence : Double = 0.0
-
-     Point(var x1: Double, var y1: Double, var z1: Double, var c: Double) {
+internal class Point(var x1: Double, var y1: Double, var z1: Double, var c: Double) {
+    protected var x : Double = x1
+    protected var y : Double = y1
+    protected var z : Double = z1
+    protected var confidence : Double = c
 
 
-
-            this.x = x1
-            this.y = y1
-            this.z = z1
-            this.confidence = c
-
-    }
     fun getCoords(): Triple<Double> {
         return Triple(this.x, this.y, this.z)
     }
@@ -32,14 +25,14 @@ internal class Point {
     }
 }
 
-internal class Chunk {
+internal class Chunk(var sl: Double, var og: Triple<Double>, var res: Double, var cres: Double) {
     protected val size = 0 //number of points
 
     protected val leaf = true //will always be a leaf on init, until split further
-
-    protected val sideLength : Double
-    protected val origin: Triple<Double> // coordinate with the least x/y/z possible in a chunk
-
+    protected var sideLength = sl
+    protected var origin: Triple<Double> = og // coordinate with the least x/y/z possible in a chunk
+    protected var resolution: Double = res
+    protected var confres = cres
     protected val elements : Vector<Point> //always keeps track of what elements are inside
 
     protected val normConfidence = 0 //average of all contained confidence points
@@ -54,14 +47,14 @@ internal class Chunk {
     protected val confres : Double //if we compare 2 points by confidence, how close is close enough?
 
 
-    class Chunk constructor(var sl: Double, var og: Triple<Double>, var res: Double, var cres: Double) {
-        init {
-            this.sideLength = sl
-            this.origin = og
-            this.resolution = res
-            this.confres = cres
-        }
-    }
+//    class Chunk constructor(var sl: Double, var og: Triple<Double>, var res: Double, var cres: Double) {
+//        init {
+//            this.sideLength = sl
+//            this.origin = og
+//            this.resolution = res
+//            this.confres = cres
+//        }
+//    }
 
     fun insert(var p: Point) {
 
