@@ -30,6 +30,16 @@ import kotlinx.coroutines.launch
 
 
 /*
+*
+*==========DEPRECATED NOT BEING USED ANYMORE==================
+* *==========DEPRECATED NOT BEING USED ANYMORE==================
+* *==========DEPRECATED NOT BEING USED ANYMORE==================
+* *==========DEPRECATED NOT BEING USED ANYMORE==================
+* *==========DEPRECATED NOT BEING USED ANYMORE==================
+* *==========DEPRECATED NOT BEING USED ANYMORE==================
+* *==========DEPRECATED NOT BEING USED ANYMORE==================
+* ONLY USE AS REFERENCE
+*
 *Name: LiveViewFragment
 *
 * ========Authors:========
