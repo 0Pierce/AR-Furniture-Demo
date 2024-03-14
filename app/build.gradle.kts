@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -6,9 +8,15 @@ plugins {
 android {
     namespace = "com.exceptionhandlers.avante_ar"
     compileSdk = 34
+
+    tasks.withType<KotlinCompile> {
+        exclude("**/testing_range/**")}
+
     buildFeatures {
         viewBinding = true
     }
+
+
 
     defaultConfig {
         applicationId = "com.exceptionhandlers.avante_ar"
