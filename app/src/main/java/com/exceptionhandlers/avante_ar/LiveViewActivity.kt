@@ -2,6 +2,7 @@ package com.exceptionhandlers.avante_ar
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.opengl.GLES20
 import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
@@ -16,13 +17,12 @@ import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.lifecycleScope
-import com.exceptionhandlers.avante_ar.databinding.FragmentLiveViewCatalogueBinding
 import com.google.ar.core.Anchor
-import com.google.ar.core.Camera
 import com.google.ar.core.Config
 import com.google.ar.core.Frame
 import com.google.ar.core.Plane
 import com.google.ar.core.TrackingFailureReason
+import com.google.ar.core.TrackingState
 import com.google.ar.core.exceptions.NotYetAvailableException
 import io.github.sceneview.ar.ARSceneView
 import io.github.sceneview.ar.arcore.getUpdatedPlanes
@@ -30,7 +30,12 @@ import io.github.sceneview.ar.getDescription
 import io.github.sceneview.ar.node.AnchorNode
 import io.github.sceneview.math.Position
 import io.github.sceneview.node.ModelNode
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import javax.microedition.khronos.opengles.GL10
 
 /*
 *Name: LiveViewActivity
@@ -66,7 +71,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
     private var anchorPositions = mutableListOf<Position>()
     private lateinit var myFrame : Frame
     private lateinit var myAnchor : Anchor
-
+    private val depthRenderer = DepthRenderer()
 
     //Used as a flag and displaying loading icon (Not showing rn)
     var isLoading = false
@@ -106,13 +111,14 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
 
 
-    private lateinit var catBind: FragmentLiveViewCatalogueBinding
+
+
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_live_view)
 
-        catBind = FragmentLiveViewCatalogueBinding.inflate(layoutInflater)
+
 
         val btnBack = findViewById<Button>(R.id.btnBack)
 
@@ -185,10 +191,6 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                     else -> Config.DepthMode.DISABLED
                 }
 
-//                myFrame = frame!!
-//                val camera = frame!!.getCamera()
-//                myAnchor = camera.
-
 
                 //UNSURE: but you can guess by going off their names
                 //No instant placements (Guessing objects cannot snap?)
@@ -198,7 +200,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
                 //config.setUpdateMode(Config.UpdateMode.LATEST_CAMERA_IMAGE)
                 config.planeFindingMode = Config.PlaneFindingMode.HORIZONTAL_AND_VERTICAL
-
+                config.instantPlacementMode = Config.InstantPlacementMode.LOCAL_Y_UP
                 //Enables object detection
                 config.semanticMode = Config.SemanticMode.ENABLED
                 //depthBtn = LiveViewbind.tglBtnDepthAPI
@@ -221,6 +223,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                         ?.let { plane ->
                             addAnchorNode(plane.createAnchor(plane.centerPose))
                         }
+                    //onDrawFrame()
                 }
 
 
@@ -242,7 +245,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
         btnDepth.setOnClickListener {
                 Toast.makeText(this, "Clicked", Toast.LENGTH_SHORT).show()
                 Log.d("depth", "Loaded Class")
-                //var depth : DepthData
+
                 var frameG = sceneViewPort.session?.frame
                 var sessionFR = sceneViewPort.session
                 val camera = frameG!!.getCamera()
@@ -252,6 +255,13 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                 }
 
 
+            // Retrieve the depth data for this frame.
+
+            // Retrieve the depth data for this frame.
+
+
+
+
         }
 
         sceneViewPort.setOnTouchListener { _, event ->
@@ -259,17 +269,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
             true
         }
 
-        //Not working yet
-//        val card1 = binding2.lyCard1
-//
-//        card1.setOnClickListener{
-//            Toast.makeText(context, "Clicked", Toast.LENGTH_LONG).show()
-//
-//            sceneViewPort.setOnTouchListener { _, event ->
-//                handleTouchEvent(event)
-//                true
-//            }
-//        }
+
 
 
 
@@ -376,4 +376,63 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
     }
 
 
+
+    private fun isTracking(): Boolean {
+        val frame = sceneViewPort.session?.frame
+        Log.d("depth", frame?.camera?.getTrackingFailureReason().toString())
+        return frame?.camera?.trackingState == TrackingState.TRACKING
+    }
+
+    fun onDrawFrame() {
+        // Clear screen to notify driver it should not load any pixels from previous frame.
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
+
+        // Notify ARCore session that the view size changed so that the perspective matrix and
+        // the video background can be properly adjusted.
+        //var frameG = sceneViewPort.session?.frame
+        var sessionFR = sceneViewPort.session
+        //val frame = sceneViewPort.session?.frame
+
+            // ARCore is tracking, proceed with operations that require tracking
+
+
+
+                // Obtain the current frame from ARSession. When the configuration is set to
+                // UpdateMode.BLOCKING (it is by default), this will throttle the rendering to the
+                // camera framerate.
+                val frame: Frame? = sessionFR?.update()
+        Log.d("depth", frame?.camera?.getTrackingFailureReason().toString())
+
+        val camera = frame?.getCamera()
+
+                // If frame is ready, render camera preview image to the GL surface.
+
+
+                // Retrieve the depth data for this frame.
+        Log.d("depth", frame?.camera?.getTrackingFailureReason().toString())
+        Log.d("depth", camera!!.getPose().toString())
+        // Retrieve the depth data for this frame.
+                val points = sessionFR?.let { DepthData.create(frame!!, it.createAnchor(camera!!.getPose())) }
+                if (points == null) {
+                    return
+                }
+
+        Log.d("depth", frame?.camera?.getTrackingFailureReason().toString())
+
+        // Filters the depth data.
+                if (sessionFR != null) {
+                    DepthData.filterUsingPlanes(points, sessionFR.getAllTrackables(Plane::class.java))
+                }
+        Log.d("depth", frame?.camera?.getTrackingFailureReason().toString())
+
+        // Visualize depth points.
+                depthRenderer.update(points)
+                if (camera != null) {
+                    depthRenderer.draw(camera)
+                }
+
+                Log.d("depth", frame?.camera?.getTrackingFailureReason().toString())
+
+
+    }
 }

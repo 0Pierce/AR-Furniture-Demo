@@ -7,10 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import java.lang.reflect.Modifier
+import javax.microedition.khronos.egl.EGLConfig
+import javax.microedition.khronos.opengles.GL10
 
 
 interface OnCatalogItemSelectedListener {
     fun onCatalogItemSelected(item: CatalogItem)
+
 }
 
 //Class to hold the items
@@ -24,11 +27,24 @@ data class CatalogItem(
 class LiveViewCatalogue : Fragment(R.layout.fragment_live_view_catalogue) {
 
 
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
 
+
+        val view: View = inflater!!.inflate(R.layout.fragment_live_view_catalogue, container, false)
+
+
+        // Return the fragment view/layout
+        return view
+    }
     //Checking when the fragment becomes visible
     private var listener: OnCatalogItemSelectedListener? = null
     override fun onAttach(context: Context) {
         super.onAttach(context)
+
+
+
+
 
         var item : CatalogItem
 
@@ -38,6 +54,9 @@ class LiveViewCatalogue : Fragment(R.layout.fragment_live_view_catalogue) {
             throw RuntimeException("$context must implement OnCatalogItemSelectedListener")
         }
     }
+
+
+
 
     override fun onDetach() {
         super.onDetach()

@@ -51,6 +51,7 @@ object DepthData {
             val points = convertRawDepthImagesTo3dPointBuffer(
                 depthImage, confidenceImage, intrinsics, modelMatrix
             )
+            Log.d("depth", "DepthImage: "+depthImage.width)
             depthImage.close()
             confidenceImage.close()
             return points
@@ -147,11 +148,18 @@ object DepthData {
                 pointCamera[2] = -depthMeters
                 pointCamera[3] = 1f
 
+
+
                 // Applies model matrix to transform point into world coordinates.
                 Matrix.multiplyMV(pointWorld, 0, modelMatrix, 0, pointCamera, 0)
                 points.put(pointWorld[0]) // X.
                 points.put(pointWorld[1]) // Y.
                 points.put(pointWorld[2]) // Z.
+                Log.d("depthXYZ", "X: "+pointWorld[0].toString())
+                Log.d("depthXYZ", "Y: "+pointWorld[1].toString())
+                Log.d("depthXYZ", "Z: "+pointWorld[2].toString())
+
+
                 points.put(confidenceNormalized)
                 x += step
             }
@@ -166,7 +174,7 @@ object DepthData {
 
         // Allocates the output buffer.
         val numPoints = points.remaining() / FLOATS_PER_POINT
-
+        Log.d("depth", "Number of points: "+numPoints.toString())
         // Each plane is checked against each point.
         for (plane in allPlanes) {
             if (plane.trackingState != TrackingState.TRACKING || plane.getSubsumedBy() != null) {
