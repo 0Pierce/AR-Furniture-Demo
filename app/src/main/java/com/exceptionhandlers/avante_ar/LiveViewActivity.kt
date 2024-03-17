@@ -2,9 +2,8 @@ package com.exceptionhandlers.avante_ar
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.media.Image
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.Button
@@ -12,12 +11,16 @@ import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import android.widget.ToggleButton
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.lifecycleScope
+import com.exceptionhandlers.avante_ar.databinding.FragmentLiveViewCatalogueBinding
 import com.google.ar.core.Anchor
+import com.google.ar.core.Camera
 import com.google.ar.core.Config
+import com.google.ar.core.Frame
 import com.google.ar.core.Plane
 import com.google.ar.core.TrackingFailureReason
 import com.google.ar.core.exceptions.NotYetAvailableException
@@ -51,7 +54,7 @@ import kotlinx.coroutines.launch
 *
 
 * */
-class LiveViewActivity : AppCompatActivity() {
+class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
 
     lateinit var catalogue: FragmentContainerView
@@ -61,6 +64,9 @@ class LiveViewActivity : AppCompatActivity() {
     lateinit var depthBtn : ToggleButton
     private var anchorCount = 0
     private var anchorPositions = mutableListOf<Position>()
+    private lateinit var myFrame : Frame
+    private lateinit var myAnchor : Anchor
+
 
     //Used as a flag and displaying loading icon (Not showing rn)
     var isLoading = false
@@ -97,18 +103,26 @@ class LiveViewActivity : AppCompatActivity() {
             null
         }
     }
+
+
+
+    private lateinit var catBind: FragmentLiveViewCatalogueBinding
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_live_view)
 
+        catBind = FragmentLiveViewCatalogueBinding.inflate(layoutInflater)
+
         val btnBack = findViewById<Button>(R.id.btnBack)
 
-        //Button to go back to Homepage
+//        Button to go back to Homepage
         btnBack.setOnClickListener{
             startActivity(Intent(this, HomePageActivity::class.java))
 
         }
+
+
 
         catalogue=findViewById(R.id.catalogueFragment)
         val btnCatOpen = findViewById<ImageButton>(R.id.imgBtnCatOpen)
@@ -116,6 +130,14 @@ class LiveViewActivity : AppCompatActivity() {
         catalogue.isVisible = false
 
 
+
+
+
+//        catBind.TestBtn.setOnClickListener{
+//            Toast.makeText(this, "Clicked", Toast.LENGTH_SHORT).show()
+//            startActivity(Intent(this, HomePageActivity::class.java))
+//
+//        }
 
         btnCatOpen.setOnClickListener{
             catalogue.isVisible = true
@@ -145,8 +167,6 @@ class LiveViewActivity : AppCompatActivity() {
             //Buggy
             //cameraStream!!.isDepthOcclusionEnabled = true
 
-
-
             //Unsure may need to remove
             //cameraStream!!.setCulling(true)
 
@@ -164,6 +184,12 @@ class LiveViewActivity : AppCompatActivity() {
                     //disables DepthMode if the device does not support it
                     else -> Config.DepthMode.DISABLED
                 }
+
+//                myFrame = frame!!
+//                val camera = frame!!.getCamera()
+//                myAnchor = camera.
+
+
                 //UNSURE: but you can guess by going off their names
                 //No instant placements (Guessing objects cannot snap?)
                 config.instantPlacementMode = Config.InstantPlacementMode.DISABLED
@@ -171,7 +197,7 @@ class LiveViewActivity : AppCompatActivity() {
                 config.lightEstimationMode = Config.LightEstimationMode.ENVIRONMENTAL_HDR
 
                 //config.setUpdateMode(Config.UpdateMode.LATEST_CAMERA_IMAGE)
-                //config.planeFindingMode = Config.PlaneFindingMode.HORIZONTAL_AND_VERTICAL
+                config.planeFindingMode = Config.PlaneFindingMode.HORIZONTAL_AND_VERTICAL
 
                 //Enables object detection
                 config.semanticMode = Config.SemanticMode.ENABLED
@@ -203,6 +229,29 @@ class LiveViewActivity : AppCompatActivity() {
             onTrackingFailureChanged = { reason ->
                 this@LiveViewActivity.trackingFailureReason = reason
             }
+
+
+
+        }
+
+
+        var btnDepth = findViewById<Button>(R.id.btnDepth)
+
+
+
+        btnDepth.setOnClickListener {
+                Toast.makeText(this, "Clicked", Toast.LENGTH_SHORT).show()
+                Log.d("depth", "Loaded Class")
+                //var depth : DepthData
+                var frameG = sceneViewPort.session?.frame
+                var sessionFR = sceneViewPort.session
+                val camera = frameG!!.getCamera()
+                sessionFR?.let { it ->
+                    DepthData.create(frameG!!,
+                        it.createAnchor(camera.getPose()))
+                }
+
+
         }
 
         sceneViewPort.setOnTouchListener { _, event ->
@@ -260,6 +309,11 @@ class LiveViewActivity : AppCompatActivity() {
     fun addAnchorNode(anchor: Anchor) {
         Toast.makeText(this, "Anchor", Toast.LENGTH_SHORT).show()
 
+
+
+
+
+
         sceneViewPort.addChildNode(
             //AnchorNode constructor call, passing along the viewPort engine and anchor position
             //then applying the following to that object
@@ -316,12 +370,10 @@ class LiveViewActivity : AppCompatActivity() {
         }
     }
 
-    fun onShelfClick(view: View) {
-        // Add shelf to AR scene
-
+    override fun onCatalogItemSelected(item: CatalogItem) {
+        TODO("Not yet implemented")
+        Toast.makeText(this, "Item selected: ${item.name}", Toast.LENGTH_SHORT).show()
     }
-
-
 
 
 }

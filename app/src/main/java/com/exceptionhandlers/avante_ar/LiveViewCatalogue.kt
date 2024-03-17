@@ -1,5 +1,6 @@
 package com.exceptionhandlers.avante_ar
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -8,9 +9,45 @@ import android.view.ViewGroup
 import java.lang.reflect.Modifier
 
 
+interface OnCatalogItemSelectedListener {
+    fun onCatalogItemSelected(item: CatalogItem)
+}
+
+//Class to hold the items
+data class CatalogItem(
+    val name: String,
+    val imgPath: Int,
+    val price: String,
+    val size: String
+)
+
 class LiveViewCatalogue : Fragment(R.layout.fragment_live_view_catalogue) {
+
+
+
+    //Checking when the fragment becomes visible
+    private var listener: OnCatalogItemSelectedListener? = null
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        var item : CatalogItem
+
+        if (context is OnCatalogItemSelectedListener) {
+            listener = context
+        } else {
+            throw RuntimeException("$context must implement OnCatalogItemSelectedListener")
+        }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        listener = null
+    }
+
+
+//??????
     fun Menu(modifer: Modifier){
-        val itemsList = listOf(
+        var itemsList = listOf(
             Furniture(name ="shelf", imageID = R.drawable.shelf, path = "drawable/shelf"),
             Furniture(name ="sofa", imageID = R.drawable.sofa, path = "drawable/sofa"))
     }
