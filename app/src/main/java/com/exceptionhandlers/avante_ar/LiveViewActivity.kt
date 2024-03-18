@@ -381,7 +381,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
         }
     }
 
-    override fun onCatalogItemSelected(item: CatalogItem) {
+    override fun onCatalogItemSelected(item: CatalogItems) {
         TODO("Not yet implemented")
         Toast.makeText(this, "Item selected: ${item.name}", Toast.LENGTH_SHORT).show()
     }

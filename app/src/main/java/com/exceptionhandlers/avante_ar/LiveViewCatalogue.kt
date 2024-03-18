@@ -13,31 +13,34 @@ import javax.microedition.khronos.opengles.GL10
 
 
 interface OnCatalogItemSelectedListener {
-    fun onCatalogItemSelected(item: CatalogItem)
+    fun onCatalogItemSelected(item: CatalogItems)
 
 }
 
 //Class to hold the items
-data class CatalogItem(
+data class CatalogItems(
     val name: String,
-    val imgPath: Int,
+    val imgPath: String
 //    val price: String,
 //    val size: String
 )
 
 class LiveViewCatalogue : Fragment(R.layout.fragment_live_view_catalogue) {
+    lateinit var view: View
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
 
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-
-
-        val view: View = inflater!!.inflate(R.layout.fragment_live_view_catalogue, container, false)
+        view = inflater!!.inflate(R.layout.fragment_live_view_catalogue, container, false)
 
 
         // Return the fragment view/layout
         return view
     }
+
     //Checking when the fragment becomes visible
     private var listener: OnCatalogItemSelectedListener? = null
     override fun onAttach(context: Context) {
@@ -46,8 +49,8 @@ class LiveViewCatalogue : Fragment(R.layout.fragment_live_view_catalogue) {
 
 
 
+        Menu()
 
-        var item : CatalogItem
 
         if (context is OnCatalogItemSelectedListener) {
             listener = context
@@ -57,33 +60,35 @@ class LiveViewCatalogue : Fragment(R.layout.fragment_live_view_catalogue) {
     }
 
 
-
-
     override fun onDetach() {
         super.onDetach()
         listener = null
     }
 
 
-//??????
-    fun Menu(modifer: Modifier){
+    //??????
+    fun Menu() {
         var itemsList = listOf(
-            Furniture(name ="shelf", imageID = R.drawable.shelf, path = "drawable/shelf"),
-            Furniture(name ="sofa", imageID = R.drawable.sofa, path = "drawable/sofa"))
-    }
-}
-// creates a clicker for each furniture
-fun assigner(view: View, itemsList: List<Furniture>) {
-    // Set listeners for each furniture instance using a loop
-    for (furniture in itemsList) {
-        var name = furniture.name
-        val buttonId = view.resources.getIdentifier(name, "id", view.context.packageName)
-        val button = view.findViewById<Button>(buttonId)
-        button.setOnClickListener {
-            //function(furniture.name)
+            CatalogItems(name = "shelf", imgPath = "drawable/shelf"),
+            CatalogItems(name = "sofa", imgPath = "drawable/sofa")
+        )
+
+        for (furniture in itemsList) {
+
+            var name = furniture.name
+            val buttonId = view.resources.getIdentifier(name, "id", view.context.packageName)
+            val button = view.findViewById<Button>(buttonId)
+            button.setOnClickListener {
+                listener?.onCatalogItemSelected(furniture)
+            }
         }
     }
-}
 
-    data class Furniture(var name:String, var imageID:Int, var path: String,
-                         var listener: ((Furniture) -> Unit)? = null)
+
+
+
+
+
+
+
+}
