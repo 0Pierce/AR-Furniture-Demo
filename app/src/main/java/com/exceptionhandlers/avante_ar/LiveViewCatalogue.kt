@@ -7,9 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import java.lang.reflect.Modifier
-import javax.microedition.khronos.egl.EGLConfig
-import javax.microedition.khronos.opengles.GL10
+import android.widget.Toast
 
 
 interface OnCatalogItemSelectedListener {
@@ -26,17 +24,17 @@ data class CatalogItems(
 )
 
 class LiveViewCatalogue : Fragment(R.layout.fragment_live_view_catalogue) {
-    lateinit var view: View
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
 
-
+        var view: View
         view = inflater!!.inflate(R.layout.fragment_live_view_catalogue, container, false)
 
-
+        menu(view)
         // Return the fragment view/layout
         return view
     }
@@ -45,12 +43,6 @@ class LiveViewCatalogue : Fragment(R.layout.fragment_live_view_catalogue) {
     private var listener: OnCatalogItemSelectedListener? = null
     override fun onAttach(context: Context) {
         super.onAttach(context)
-
-
-
-
-        Menu()
-
 
         if (context is OnCatalogItemSelectedListener) {
             listener = context
@@ -67,21 +59,27 @@ class LiveViewCatalogue : Fragment(R.layout.fragment_live_view_catalogue) {
 
 
     //??????
-    fun Menu() {
+    fun menu(view: View) {
         var itemsList = listOf(
             CatalogItems(name = "shelf", imgPath = "drawable/shelf"),
             CatalogItems(name = "sofa", imgPath = "drawable/sofa")
         )
-
-        for (furniture in itemsList) {
-
-            var name = furniture.name
-            val buttonId = view.resources.getIdentifier(name, "id", view.context.packageName)
-            val button = view.findViewById<Button>(buttonId)
-            button.setOnClickListener {
-                listener?.onCatalogItemSelected(furniture)
-            }
-        }
+        var i : Int = 0
+//        for (furniture in itemsList) {
+//            i+=1
+//            var name = furniture.name
+//            val buttonId = view.resources.getIdentifier(name)
+//            val button = view.findViewById<Button>(buttonId)
+//            button.setOnClickListener {
+//                if(i <= 1){
+//                    listener?.onCatalogItemSelected(furniture)
+//                }else{
+//                    Toast.makeText(context, "No Model added", Toast.LENGTH_SHORT).show()
+//                }
+//
+//            }
+//            i+=1
+//        }
     }
 
 
