@@ -236,7 +236,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
         }
 
-        sceneViewPort.renderer.engine.
+        
         try {
             // Create the texture and pass it to ARCore session to be filled during update().
 
