@@ -30,12 +30,8 @@ import io.github.sceneview.ar.getDescription
 import io.github.sceneview.ar.node.AnchorNode
 import io.github.sceneview.math.Position
 import io.github.sceneview.node.ModelNode
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import javax.microedition.khronos.opengles.GL10
+import java.io.IOException
 
 /*
 *Name: LiveViewActivity
@@ -72,6 +68,8 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
     private lateinit var myFrame : Frame
     private lateinit var myAnchor : Anchor
     private val depthRenderer = DepthRenderer()
+    private val boxRenderer = BoxRenderer()
+
 
     //Used as a flag and displaying loading icon (Not showing rn)
     var isLoading = false
@@ -127,7 +125,6 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
             startActivity(Intent(this, HomePageActivity::class.java))
 
         }
-
 
 
         catalogue=findViewById(R.id.catalogueFragment)
@@ -223,10 +220,12 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                         ?.let { plane ->
                             addAnchorNode(plane.createAnchor(plane.centerPose))
                         }
-                    //onDrawFrame()
+
+
+
+
                 }
-
-
+                onDrawFrame()
             }
             //Self explanatory
             onTrackingFailureChanged = { reason ->
@@ -237,6 +236,16 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
         }
 
+        sceneViewPort.renderer.engine.
+        try {
+            // Create the texture and pass it to ARCore session to be filled during update().
+
+            depthRenderer.createOnGlThread( /*context=*/this)
+            boxRenderer.createOnGlThread( /*context=*/this)
+
+        } catch (e: IOException) {
+            Log.d("depth", "Cant init renderer: "+ e)
+        }
 
         var btnDepth = findViewById<Button>(R.id.btnDepth)
 
@@ -248,13 +257,15 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
                 var frameG = sceneViewPort.session?.frame
                 var sessionFR = sceneViewPort.session
+
                 val camera = frameG!!.getCamera()
                 sessionFR?.let { it ->
-                    DepthData.create(frameG!!,
+                    DepthData.create(
+                        frameG,
                         it.createAnchor(camera.getPose()))
                 }
 
-
+                //onDrawFrame(sessionFR)
             // Retrieve the depth data for this frame.
 
             // Retrieve the depth data for this frame.
@@ -379,59 +390,175 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
     private fun isTracking(): Boolean {
         val frame = sceneViewPort.session?.frame
-        Log.d("depth", frame?.camera?.getTrackingFailureReason().toString())
+        Log.d("depth", "0: "+frame?.camera?.getTrackingFailureReason().toString())
         return frame?.camera?.trackingState == TrackingState.TRACKING
     }
 
-    fun onDrawFrame() {
+//    fun onDrawFrame(session: ARSession?) {
+//        // Clear screen to notify driver it should not load any pixels from previous frame.
+//        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
+//
+//
+//        // Prepare the rendering objects. This involves reading shaders, so may throw an IOException.
+//        try {
+//            // Create the texture and pass it to ARCore session to be filled during update().
+//
+//            depthRenderer.createOnGlThread( /*context=*/this)
+//
+//        } catch (e: IOException) {
+//            Log.d("depth", "Cant init renderer: "+ e)
+//        }
+//        depthRenderer.createOnGlThread(this);
+//
+//        if(isTracking()){
+//
+//            // Notify ARCore session that the view size changed so that the perspective matrix and
+//            // the video background can be properly adjusted.
+//            //var frameG = sceneViewPort.session?.frame
+//
+//            //val frame = sceneViewPort.session?.frame
+//
+//            // ARCore is tracking, proceed with operations that require tracking
+//
+//
+//
+//            // Obtain the current frame from ARSession. When the configuration is set to
+//            // UpdateMode.BLOCKING (it is by default), this will throttle the rendering to the
+//            // camera framerate.
+//            var frame: Frame? = session?.update()
+//            Log.d("depth", "1: "+frame?.camera?.getTrackingFailureReason().toString())
+//
+//            var camera = frame?.getCamera()
+//
+//            // If frame is ready, render camera preview image to the GL surface.
+//
+//
+//            // Retrieve the depth data for this frame.
+//            Log.d("depth", "2: "+frame?.camera?.getTrackingFailureReason().toString())
+//            Log.d("depth", camera!!.getPose().toString())
+//            // Retrieve the depth data for this frame.
+//            var points = session?.let { session ->
+//                frame?.let { frame ->
+//                    camera?.let { camera ->
+//                        DepthData.create(frame, session.createAnchor(camera.getPose()))
+//                    }
+//                }
+//            }
+//
+//
+//            Log.d("depth", "Points: "+points.toString())
+//
+//            if (points == null) {
+//                return
+//            }
+//
+//            Log.d("depth", "3: "+frame?.camera?.getTrackingFailureReason().toString())
+//
+//            // Filters the depth data.
+//            if (session != null) {
+//                DepthData.filterUsingPlanes(points, session.getAllTrackables(Plane::class.java))
+//            }
+//            Log.d("depth", "4: "+frame?.camera?.getTrackingFailureReason().toString())
+//
+//            // Visualize depth points.
+//            depthRenderer.update(points)
+//            if (camera != null) {
+//                Toast.makeText(this, "Drew camera", Toast.LENGTH_SHORT).show()
+//                depthRenderer.draw(camera)
+//            }
+//
+//            Log.d("depth", frame?.camera?.getTrackingFailureReason().toString())
+//
+//        }else{
+//            Toast.makeText(this, "Not tracking", Toast.LENGTH_SHORT).show()
+//        }
+//
+//
+//
+//    }
+
+
+
+
+     fun onDrawFrame() {
         // Clear screen to notify driver it should not load any pixels from previous frame.
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
 
-        // Notify ARCore session that the view size changed so that the perspective matrix and
-        // the video background can be properly adjusted.
-        //var frameG = sceneViewPort.session?.frame
-        var sessionFR = sceneViewPort.session
-        //val frame = sceneViewPort.session?.frame
+
+        // Prepare the rendering objects. This involves reading shaders, so may throw an IOException.
+
+
+
+        if(isTracking()){
+
+            // Notify ARCore session that the view size changed so that the perspective matrix and
+            // the video background can be properly adjusted.
+            //var frameG = sceneViewPort.session?.frame
+
+            //val frame = sceneViewPort.session?.frame
 
             // ARCore is tracking, proceed with operations that require tracking
 
 
 
-                // Obtain the current frame from ARSession. When the configuration is set to
-                // UpdateMode.BLOCKING (it is by default), this will throttle the rendering to the
-                // camera framerate.
-                val frame: Frame? = sessionFR?.update()
-        Log.d("depth", frame?.camera?.getTrackingFailureReason().toString())
+            // Obtain the current frame from ARSession. When the configuration is set to
+            // UpdateMode.BLOCKING (it is by default), this will throttle the rendering to the
+            // camera framerate.
 
-        val camera = frame?.getCamera()
+            var frame: Frame? = sceneViewPort.session?.update()
+            Log.d("depth", "1: "+frame?.camera?.getTrackingFailureReason().toString())
 
-                // If frame is ready, render camera preview image to the GL surface.
+            var camera = frame?.getCamera()
+
+            // If frame is ready, render camera preview image to the GL surface.
 
 
-                // Retrieve the depth data for this frame.
-        Log.d("depth", frame?.camera?.getTrackingFailureReason().toString())
-        Log.d("depth", camera!!.getPose().toString())
-        // Retrieve the depth data for this frame.
-                val points = sessionFR?.let { DepthData.create(frame!!, it.createAnchor(camera!!.getPose())) }
-                if (points == null) {
-                    return
+            // Retrieve the depth data for this frame.
+            Log.d("depth", "2: "+frame?.camera?.getTrackingFailureReason().toString())
+            Log.d("depth", camera!!.getPose().toString())
+            // Retrieve the depth data for this frame.
+            var points = sceneViewPort.session?.let { session ->
+                frame?.let { frame ->
+                    camera?.let { camera ->
+                        DepthData.create(frame, session.createAnchor(camera.getPose()))
+                    }
                 }
+            }
 
-        Log.d("depth", frame?.camera?.getTrackingFailureReason().toString())
 
-        // Filters the depth data.
-                if (sessionFR != null) {
-                    DepthData.filterUsingPlanes(points, sessionFR.getAllTrackables(Plane::class.java))
-                }
-        Log.d("depth", frame?.camera?.getTrackingFailureReason().toString())
+            Log.d("depth", "Points: "+points.toString())
 
-        // Visualize depth points.
-                depthRenderer.update(points)
-                if (camera != null) {
-                    depthRenderer.draw(camera)
-                }
+            if (points == null) {
+                return
+            }
 
-                Log.d("depth", frame?.camera?.getTrackingFailureReason().toString())
+            Log.d("depth", "3: "+frame?.camera?.getTrackingFailureReason().toString())
+
+            // Filters the depth data.
+            if (sceneViewPort.session != null) {
+                DepthData.filterUsingPlanes(points, sceneViewPort.session!!.getAllTrackables(Plane::class.java))
+            }
+            Log.d("depth", "4: "+frame?.camera?.getTrackingFailureReason().toString())
+
+            // Visualize depth points.
+            depthRenderer.update(points)
+            if (camera != null) {
+                Toast.makeText(this, "Drew camera", Toast.LENGTH_SHORT).show()
+                depthRenderer.draw(camera)
+            }
+
+
+            // Draw boxes around clusters of points.
+            val clusteringHelper = PointClusteringHelper(points)
+            val clusters: List<AABB> = clusteringHelper.findClusters()
+            for (aabb in clusters) {
+                boxRenderer.draw(aabb, camera)
+            }
+            Log.d("depth", frame?.camera?.getTrackingFailureReason().toString())
+
+        }else{
+            Toast.makeText(this, "Not tracking", Toast.LENGTH_SHORT).show()
+        }
 
 
     }
