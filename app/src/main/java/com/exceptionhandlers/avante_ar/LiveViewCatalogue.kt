@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import java.lang.reflect.Modifier
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
@@ -20,8 +21,8 @@ interface OnCatalogItemSelectedListener {
 data class CatalogItem(
     val name: String,
     val imgPath: Int,
-    val price: String,
-    val size: String
+//    val price: String,
+//    val size: String
 )
 
 class LiveViewCatalogue : Fragment(R.layout.fragment_live_view_catalogue) {
@@ -71,4 +72,18 @@ class LiveViewCatalogue : Fragment(R.layout.fragment_live_view_catalogue) {
             Furniture(name ="sofa", imageID = R.drawable.sofa, path = "drawable/sofa"))
     }
 }
-    data class Furniture(var name:String, var imageID:Int, var path: String)
+// creates a clicker for each furniture
+fun assigner(view: View, itemsList: List<Furniture>) {
+    // Set listeners for each furniture instance using a loop
+    for (furniture in itemsList) {
+        var name = furniture.name
+        val buttonId = view.resources.getIdentifier(name, "id", view.context.packageName)
+        val button = view.findViewById<Button>(buttonId)
+        button.setOnClickListener {
+            //function(furniture.name)
+        }
+    }
+}
+
+    data class Furniture(var name:String, var imageID:Int, var path: String,
+                         var listener: ((Furniture) -> Unit)? = null)
