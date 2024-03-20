@@ -1,13 +1,15 @@
 package com.exceptionhandlers.avante_ar
-
 import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.Toast
+import com.exceptionhandlers.avante_ar.LiveViewActivity
+
+
 
 
 interface OnCatalogItemSelectedListener {
@@ -24,14 +26,14 @@ data class CatalogItems(
 )
 
 class LiveViewCatalogue : Fragment(R.layout.fragment_live_view_catalogue) {
-
-
+    private val selectedItem: SelectedItem = SelectedItem("random", "random")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
 
         var view: View
+
         view = inflater!!.inflate(R.layout.fragment_live_view_catalogue, container, false)
 
         menu(view)
@@ -58,35 +60,48 @@ class LiveViewCatalogue : Fragment(R.layout.fragment_live_view_catalogue) {
     }
 
 
-    //??????
     fun menu(view: View) {
         var itemsList = listOf(
             CatalogItems(name = "shelf", imgPath = "drawable/shelf"),
             CatalogItems(name = "sofa", imgPath = "drawable/sofa")
         )
-        var i : Int = 0
-//        for (furniture in itemsList) {
-//            i+=1
-//            var name = furniture.name
-//            val buttonId = view.resources.getIdentifier(name)
-//            val button = view.findViewById<Button>(buttonId)
-//            button.setOnClickListener {
-//                if(i <= 1){
-//                    listener?.onCatalogItemSelected(furniture)
-//                }else{
-//                    Toast.makeText(context, "No Model added", Toast.LENGTH_SHORT).show()
-//                }
-//
-//            }
-//            i+=1
-//        }
+        val size = itemsList.size
+        for (furniture in itemsList) {
+            var name = furniture.name
+            val buttonId = view.resources.getIdentifier(name, "id", context?.packageName)
+            val button = view.findViewById<LinearLayout>(buttonId)
+
+            button?.setOnClickListener {
+                if (size <= 1) {
+                    updateSelected(furniture)
+                    listener?.onCatalogItemSelected(furniture)
+                } else {
+                    Toast.makeText(context, "No Model added", Toast.LENGTH_SHORT).show()
+                }
+
+            }
+        }
     }
 
+    private fun updateSelected(furniture: CatalogItems) {
+        // Update the values of selectedItem
+        selectedItem.apply {
+            name = furniture.name
+            path = furniture.imgPath
+        }
+    }
 
+    data class SelectedItem(var name: String, var path: String) {
+        companion object {
+            // Singleton object to hold the selected item
+            private var instance: SelectedItem? = null
 
-
-
-
-
-
+            fun getInstance(): SelectedItem {
+                if (instance == null) {
+                    instance = SelectedItem("random", "random")
+                }
+                return instance!!
+            }
+        }
+    }
 }
