@@ -341,9 +341,10 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                         //Raises the loading flag
                         isLoading = true
                         //Loads in the placeholder helmet model
-
+                        val selectedPath = LiveViewCatalogue.SelectedItem.getInstance().path
                         sceneViewPort.modelLoader.loadModelInstance(
-                            "https://sceneview.github.io/assets/models/DamagedHelmet.glb"
+                            selectedPath
+                            //"https://sceneview.github.io/assets/models/DamagedHelmet.glb"
                             //UNSURE: Makes the model scalable and adjustable?
                         )?.let { modelInstance ->
                             addChildNode(
