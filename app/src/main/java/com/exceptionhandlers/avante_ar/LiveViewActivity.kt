@@ -123,7 +123,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
             supportFragmentManager.commit{
                 setReorderingAllowed(true)
-                val fragment = LiveViewCatalogue()
+                //val fragment = LiveViewCatalogue()
                 add<LiveViewCatalogue>(R.id.catalogueFragment)
 
             }
@@ -161,6 +161,10 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
         }
 
         btnCatClose.setOnClickListener{
+            val fragment = supportFragmentManager.findFragmentById(R.id.catalogueFragment)
+            if (fragment != null) {
+                supportFragmentManager.beginTransaction().remove(fragment).commit()
+            }
             catalogue.isVisible = false
             btnCatClose.isVisible = false
         }
@@ -253,7 +257,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
         try {
             // Create the texture and pass it to ARCore session to be filled during update().
 
-            depthRenderer.createOnGlThread( /*context=*/this)
+            //depthRenderer.createOnGlThread( /*context=*/this)
             boxRenderer.createOnGlThread( /*context=*/this)
 
         } catch (e: IOException) {
