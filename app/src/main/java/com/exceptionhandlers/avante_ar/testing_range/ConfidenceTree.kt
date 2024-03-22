@@ -1,3 +1,5 @@
+import java.lang.Double.max
+import java.lang.Double.min
 import java.util.PriorityQueue
 import kotlin.math.abs
 
@@ -5,7 +7,7 @@ import kotlin.math.abs
 //was originally going for a kd-tree, but the oct-tree would probably be less confusing to use
 //the largest unit will be 1m blocks
 
-internal class Point(x1: Double, y1: Double, z1: Double, c: Double) : Comparable<Point> {
+internal class Point(x1: Double, y1: Double, z1: Double, c: Double = 0.0) : Comparable<Point> { //we can create dummy points for calculation simply by ignoring confidence
     private var x : Double = x1
     private var y : Double = y1
     private var z : Double = z1
@@ -23,8 +25,18 @@ internal class Point(x1: Double, y1: Double, z1: Double, c: Double) : Comparable
     fun compareConf(p2: Point, res: Double) : Boolean {
         return abs(this.confidence-p2.confidence) <= res
     }
+    fun between(p1: Point, p2: Point): Boolean {
+        val Mx = max(p1.x, p2.x)
+        val mx = min(p2.x, p2.x)
+        val My = max(p1.y, p2.y)
+        val my = min(p2.y, p2.y)
+        val Mz = max(p1.z, p2.z)
+        val mz = min(p2.z, p2.z)
+        return x in mx..Mx && y in my..My && z in mz..Mz
+    }
     override fun compareTo(other: Point): Int = abs(confidence).compareTo(abs(other.confidence)) //allows ordering by absolute confidence (no matter the sign, larger absolute value means more sure)
                                                                                                  //lowest AC points go FIRST
+
 }
 
 internal class Chunk(sl: Double, og: Triple<Double, Double, Double>, res: Double, cres: Double, ma: Int){
@@ -69,6 +81,8 @@ internal class Chunk(sl: Double, og: Triple<Double, Double, Double>, res: Double
         }
     }
     fun cull(n: Int) { //cull a certain number
+        nc_updated = false
+        cd_updated = false
         val octcull = arrayOf(arrayOf(arrayOf(0, 0), arrayOf(0, 0)), arrayOf(arrayOf(0, 0), arrayOf(0, 0))) //how many should the child nodes cull each?
         for(i in 1..n) {
             if(elements.isEmpty()) break
@@ -107,6 +121,8 @@ internal class Chunk(sl: Double, og: Triple<Double, Double, Double>, res: Double
     //as such this method has a pretty bad time complexity
     //use cull instead for deleting low confidence points
     fun delete(p: Point) { //delete by confidence AND point compare
+        nc_updated = false
+        cd_updated = false
         val templist = ArrayList<Point>()
         var found = false
         while(!elements.isEmpty()) {
@@ -129,6 +145,8 @@ internal class Chunk(sl: Double, og: Triple<Double, Double, Double>, res: Double
         octants[xc][yc][zc]?.delete(p)
     }
     fun deletePC(p: Point) { //delete by point compare only
+        nc_updated = false
+        cd_updated = false
         val templist = ArrayList<Point>()
         var found = false
         while(!elements.isEmpty()) {
@@ -215,15 +233,68 @@ internal class Chunk(sl: Double, og: Triple<Double, Double, Double>, res: Double
                     }
                 }
             }
-            confidenceDensity = sum/8 //each octant has 1/8 the area
+            confidenceDensity = sum/8 //each octant has 1/8 the volume
         }
         return confidenceDensity
     }
-    fun areaNC(p1: Point, p2: Point): Double {
-        return 0.0
+    private fun inArea(p1: Point, p2: Point): ArrayList<Point> {
+        val ret = ArrayList<Point>()
+        for(p in elements) {
+            if(p.between(p1, p2)) ret.add(p);
+        }
+        return ret;
     }
-    fun areaCD(p1: Point, p2: Point): Double {
-        return 0.0
+    private fun covers(p1: Point, p2: Point): Boolean {
+        val p1t = Point(origin.first, origin.second, origin.third, 0.0);
+        val p2t = Point(origin.first+sideLength, origin.second+sideLength, origin.third+sideLength, 0.0);
+        return p1t.between(p1, p2) && p2t.between(p1, p2)
+    }
+    private fun calcVolume(p1: Point, p2: Point): Double {
+        val Mx = max(p1.getCoords().first, p2.getCoords().first)
+        val mx = min(p2.getCoords().first, p2.getCoords().first)
+        val My = max(p1.getCoords().second, p2.getCoords().second)
+        val my = min(p2.getCoords().second, p2.getCoords().second)
+        val Mz = max(p1.getCoords().third, p2.getCoords().third)
+        val mz = min(p2.getCoords().third, p2.getCoords().third)
+        return (Mx-mx)*(My-my)*(Mz-mz)
+    }
+    private fun vncHelper(p1: Point, p2: Point): Pair<Double, Int> { //otensibly to help calculate volume NC, but as it turns out is quite multipurpose!
+        if(covers(p1, p2)) return Pair(selfNC(), elements.size)
+        else if(leaf) { //if we are a leaf, we HAVE TO go check each point
+            val valid = inArea(p1, p2)
+            val sz = valid.size
+            var sum = 0.0
+            for(i in valid) {
+                sum += i.getConf()
+            }
+            return Pair(sum/(sz*1.0), sz)
+        } else { //recursive case, we are not a leaf so we check each child node and do a weighted average
+            var sum = 0.0
+            var sz = 0
+            for(i in 0..1) {
+                for (j in 0..1) {
+                    for (k in 0..1) {
+                        if(octants[i][j][k] != null) {
+                            val temp =  octants[i][j][k]!!.vncHelper(p1, p2)
+                            sum += temp.first*(temp.second*1.0)
+                            sz += temp.second
+                        }
+                    }
+                }
+            }
+            return Pair(sum/(sz*1.0), sz)
+        }
+    }
+    fun volumeNC(p1: Point, p2: Point): Double {
+        return vncHelper(p1, p2).first
+    }
+    fun volumeCD(p1: Point, p2: Point): Double { //important: it calculates with respect to the WHOLE volume, assuming no other points exist
+                                                 //when calling within the full confidence tree class, remember to sum everything in range!
+        val temp = vncHelper(p1, p2)
+        return temp.first*(temp.second*1.0)/calcVolume(p1, p2)
+    }
+    fun isEmptyVolume(p1: Point, p2: Point): Boolean { //if there aren't points cast here, means this part is either not scanned or behind a wall (especially for bigger areas)
+        return vncHelper(p1, p2).second == 0
     }
 }
 
