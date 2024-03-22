@@ -240,13 +240,13 @@ internal class Chunk(sl: Double, og: Triple<Double, Double, Double>, res: Double
     private fun inArea(p1: Point, p2: Point): ArrayList<Point> {
         val ret = ArrayList<Point>()
         for(p in elements) {
-            if(p.between(p1, p2)) ret.add(p);
+            if(p.between(p1, p2)) ret.add(p)
         }
-        return ret;
+        return ret
     }
     private fun covers(p1: Point, p2: Point): Boolean {
-        val p1t = Point(origin.first, origin.second, origin.third, 0.0);
-        val p2t = Point(origin.first+sideLength, origin.second+sideLength, origin.third+sideLength, 0.0);
+        val p1t = Point(origin.first, origin.second, origin.third, 0.0)
+        val p2t = Point(origin.first+sideLength, origin.second+sideLength, origin.third+sideLength, 0.0)
         return p1t.between(p1, p2) && p2t.between(p1, p2)
     }
     private fun calcVolume(p1: Point, p2: Point): Double {
