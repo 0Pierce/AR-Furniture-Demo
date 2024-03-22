@@ -13,7 +13,6 @@ import android.widget.TextView
 import android.widget.Toast
 import android.widget.ToggleButton
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.os.bundleOf
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentContainerView
@@ -303,8 +302,10 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
     }
 
+
+    //Measure distance
     private fun handleTouchEvent(event: MotionEvent) {
-        if (event.action == MotionEvent.ACTION_DOWN && anchorCount < 2) {
+        if (event.action == MotionEvent.ACTION_DOWN && anchorCount < 4) {
             try {
                 val hitResult = sceneViewPort.frame?.hitTest(event.x, event.y)?.firstOrNull()
 
@@ -335,8 +336,11 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
     private var anchorsWithNodes = mutableListOf<Pair<AnchorNode, Position>>()
 
+
+
+
     //Adding a new anchor based on a anchor position
-    fun addAnchorNode(anchor: Anchor) {
+    fun addAnchorNode(anchor: Anchor, item: CatalogItems? = null) {
         Toast.makeText(this, "Anchor", Toast.LENGTH_SHORT).show()
 
 
@@ -360,25 +364,55 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                         //Raises the loading flag
                         isLoading = true
                         //Loads in the placeholder helmet model
-                        val selectedPath = LiveViewCatalogue.SelectedItem.getInstance().path
-                        sceneViewPort.modelLoader.loadModelInstance(
-                            selectedPath
-                            //"https://sceneview.github.io/assets/models/DamagedHelmet.glb"
-                            //UNSURE: Makes the model scalable and adjustable?
-                        )?.let { modelInstance ->
-                            addChildNode(
-                                ModelNode(
-                                    modelInstance = modelInstance,
-                                    // Scale to fit in a 0.5 meters cube
-                                    scaleToUnits = 0.5f,
-                                    // Bottom origin instead of center so the model base is on floor
-                                    centerOrigin = Position(y = -0.5f)
 
-                                ).apply {
-                                    isEditable = true
-                                }
-                            )
+                        //Change
+
+                        if(item == null){
+                            sceneViewPort.modelLoader.loadModelInstance(
+
+                                "https://sceneview.github.io/assets/models/DamagedHelmet.glb"
+                                //UNSURE: Makes the model scalable and adjustable?
+                            )?.let { modelInstance ->
+                                addChildNode(
+                                    ModelNode(
+                                        modelInstance = modelInstance,
+                                        // Scale to fit in a 0.5 meters cube
+                                        scaleToUnits = 0.5f,
+                                        // Bottom origin instead of center so the model base is on floor
+                                        centerOrigin = Position(y = -0.5f)
+
+                                    ).apply {
+                                        isEditable = true
+                                    }
+                                )
+                            }
+                         //Could be an else, but adding elif here so that, in the future
+                         //If we want to adjust certain items models before anchroing we can
+                         //and we dont have to change this
+                         //Small future proofing
+                        }else if(item != null){
+                            val selectedPath = item.imgPath
+                            sceneViewPort.modelLoader.loadModelInstance(
+
+                                selectedPath
+                                //UNSURE: Makes the model scalable and adjustable?
+                            )?.let { modelInstance ->
+                                addChildNode(
+                                    ModelNode(
+                                        modelInstance = modelInstance,
+                                        // Scale to fit in a 0.5 meters cube
+                                        scaleToUnits = 0.5f,
+                                        // Bottom origin instead of center so the model base is on floor
+                                        centerOrigin = Position(y = -0.5f)
+
+                                    ).apply {
+                                        isEditable = true
+                                    }
+                                )
+                            }
+
                         }
+
                         isLoading = false
                     }
                     //Finally, sets the AnchorNode to the current new Anchor
@@ -392,7 +426,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
         anchorCount++
 
 // Update instructions or perform any other actions when the limit is reached
-        if (anchorCount >= 2) {
+        if (anchorCount >= 4) {
             instructionText.text = getString(R.string.max_anchors_reached)
 
             // Calculate and display the distance between the two anchors
@@ -407,6 +441,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
     override fun onCatalogItemSelected(item: CatalogItems) {
         
         selectedItems.add(item)
+        addAnchorNode(item)
         Toast.makeText(this, "Item selected: ${item.name}", Toast.LENGTH_SHORT).show()
     }
 

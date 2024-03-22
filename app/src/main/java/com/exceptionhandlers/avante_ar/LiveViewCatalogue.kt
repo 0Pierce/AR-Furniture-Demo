@@ -82,7 +82,7 @@ class LiveViewCatalogue : Fragment(R.layout.fragment_live_view_catalogue) {
             val button = view.findViewById<LinearLayout>(buttonId)
 
             button?.setOnClickListener {
-                if (size <= 1) {
+                if (size <= 2) {
                     updateSelected(furniture)
                     listener?.onCatalogItemSelected(furniture)
                 } else {
