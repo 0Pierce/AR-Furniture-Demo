@@ -25,6 +25,7 @@ data class CatalogItems(
 //    val size: String
 )
 
+
 class LiveViewCatalogue : Fragment(R.layout.fragment_live_view_catalogue) {
     private val selectedItem: SelectedItem = SelectedItem("random", "random")
     override fun onCreateView(
@@ -41,12 +42,16 @@ class LiveViewCatalogue : Fragment(R.layout.fragment_live_view_catalogue) {
         return view
     }
 
+
+
+
     //Checking when the fragment becomes visible
     private var listener: OnCatalogItemSelectedListener? = null
     override fun onAttach(context: Context) {
         super.onAttach(context)
-
+        Toast.makeText(context, "Attached", Toast.LENGTH_SHORT).show()
         if (context is OnCatalogItemSelectedListener) {
+
             listener = context
         } else {
             throw RuntimeException("$context must implement OnCatalogItemSelectedListener")
@@ -59,6 +64,11 @@ class LiveViewCatalogue : Fragment(R.layout.fragment_live_view_catalogue) {
         listener = null
     }
 
+
+
+    fun coool(){
+
+    }
 
     fun menu(view: View) {
         var itemsList = listOf(
@@ -89,6 +99,8 @@ class LiveViewCatalogue : Fragment(R.layout.fragment_live_view_catalogue) {
             name = furniture.name
             path = furniture.imgPath
         }
+
+
     }
 
     data class SelectedItem(var name: String, var path: String) {

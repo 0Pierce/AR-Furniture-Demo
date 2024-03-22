@@ -13,9 +13,12 @@ import android.widget.TextView
 import android.widget.Toast
 import android.widget.ToggleButton
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentContainerView
+import androidx.fragment.app.add
+import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import com.google.ar.core.Anchor
 import com.google.ar.core.Config
@@ -67,6 +70,8 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
     private var anchorPositions = mutableListOf<Position>()
     private lateinit var myFrame : Frame
     private lateinit var myAnchor : Anchor
+
+    private var selectedItems = mutableListOf<CatalogItems>()
     private val depthRenderer = DepthRenderer()
     private val boxRenderer = BoxRenderer()
 
@@ -110,11 +115,19 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
 
 
-
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_live_view)
+        if(savedInstanceState == null){
+
+            supportFragmentManager.commit{
+                setReorderingAllowed(true)
+                val fragment = LiveViewCatalogue()
+                add<LiveViewCatalogue>(R.id.catalogueFragment)
+
+            }
+        }
 
 
 
@@ -168,7 +181,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
             planeRenderer.isShadowReceiver = false
 
             //Buggy
-            //cameraStream!!.isDepthOcclusionEnabled = true
+            cameraStream!!.isDepthOcclusionEnabled = true
 
             //Unsure may need to remove
             //cameraStream!!.setCulling(true)
@@ -225,7 +238,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
 
                 }
-                onDrawFrame()
+                //onDrawFrame()
             }
             //Self explanatory
             onTrackingFailureChanged = { reason ->
@@ -314,6 +327,8 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
     }
 
 
+
+
     private var anchorsWithNodes = mutableListOf<Pair<AnchorNode, Position>>()
 
     //Adding a new anchor based on a anchor position
@@ -382,8 +397,12 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
         }
     }
 
+
+
+
     override fun onCatalogItemSelected(item: CatalogItems) {
-        TODO("Not yet implemented")
+        
+        selectedItems.add(item)
         Toast.makeText(this, "Item selected: ${item.name}", Toast.LENGTH_SHORT).show()
     }
 
@@ -394,90 +413,6 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
         Log.d("depth", "0: "+frame?.camera?.getTrackingFailureReason().toString())
         return frame?.camera?.trackingState == TrackingState.TRACKING
     }
-
-//    fun onDrawFrame(session: ARSession?) {
-//        // Clear screen to notify driver it should not load any pixels from previous frame.
-//        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
-//
-//
-//        // Prepare the rendering objects. This involves reading shaders, so may throw an IOException.
-//        try {
-//            // Create the texture and pass it to ARCore session to be filled during update().
-//
-//            depthRenderer.createOnGlThread( /*context=*/this)
-//
-//        } catch (e: IOException) {
-//            Log.d("depth", "Cant init renderer: "+ e)
-//        }
-//        depthRenderer.createOnGlThread(this);
-//
-//        if(isTracking()){
-//
-//            // Notify ARCore session that the view size changed so that the perspective matrix and
-//            // the video background can be properly adjusted.
-//            //var frameG = sceneViewPort.session?.frame
-//
-//            //val frame = sceneViewPort.session?.frame
-//
-//            // ARCore is tracking, proceed with operations that require tracking
-//
-//
-//
-//            // Obtain the current frame from ARSession. When the configuration is set to
-//            // UpdateMode.BLOCKING (it is by default), this will throttle the rendering to the
-//            // camera framerate.
-//            var frame: Frame? = session?.update()
-//            Log.d("depth", "1: "+frame?.camera?.getTrackingFailureReason().toString())
-//
-//            var camera = frame?.getCamera()
-//
-//            // If frame is ready, render camera preview image to the GL surface.
-//
-//
-//            // Retrieve the depth data for this frame.
-//            Log.d("depth", "2: "+frame?.camera?.getTrackingFailureReason().toString())
-//            Log.d("depth", camera!!.getPose().toString())
-//            // Retrieve the depth data for this frame.
-//            var points = session?.let { session ->
-//                frame?.let { frame ->
-//                    camera?.let { camera ->
-//                        DepthData.create(frame, session.createAnchor(camera.getPose()))
-//                    }
-//                }
-//            }
-//
-//
-//            Log.d("depth", "Points: "+points.toString())
-//
-//            if (points == null) {
-//                return
-//            }
-//
-//            Log.d("depth", "3: "+frame?.camera?.getTrackingFailureReason().toString())
-//
-//            // Filters the depth data.
-//            if (session != null) {
-//                DepthData.filterUsingPlanes(points, session.getAllTrackables(Plane::class.java))
-//            }
-//            Log.d("depth", "4: "+frame?.camera?.getTrackingFailureReason().toString())
-//
-//            // Visualize depth points.
-//            depthRenderer.update(points)
-//            if (camera != null) {
-//                Toast.makeText(this, "Drew camera", Toast.LENGTH_SHORT).show()
-//                depthRenderer.draw(camera)
-//            }
-//
-//            Log.d("depth", frame?.camera?.getTrackingFailureReason().toString())
-//
-//        }else{
-//            Toast.makeText(this, "Not tracking", Toast.LENGTH_SHORT).show()
-//        }
-//
-//
-//
-//    }
-
 
 
 

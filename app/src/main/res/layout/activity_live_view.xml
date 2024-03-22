@@ -17,19 +17,17 @@
         android:textAlignment="center" />
 
 
-
-
-
     <FrameLayout
         android:id="@+id/loadingView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="#40000000"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible">
 
         <com.google.android.material.progressindicator.CircularProgressIndicator
             android:layout_width="wrap_content"
@@ -81,7 +79,6 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/catalogueFragment"
-        android:name="com.exceptionhandlers.avante_ar.LiveViewCatalogue"
         android:layout_width="match_parent"
         android:layout_height="340dp"
         android:background="#667AFF"
@@ -89,8 +86,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0"
-        tools:layout="@layout/fragment_live_view_catalogue"
-        tools:visibility="invisible" />
+
+        tools:visibility="visible" />
 
     <ImageButton
         android:id="@+id/imgBtnCatClose"
