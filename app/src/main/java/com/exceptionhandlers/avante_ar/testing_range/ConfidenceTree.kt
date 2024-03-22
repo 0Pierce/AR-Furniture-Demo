@@ -152,7 +152,7 @@ internal class Chunk(sl: Double, og: Triple<Double, Double, Double>, res: Double
         while(!elements.isEmpty()) {
             val p2 = elements.peek()!!
             elements.poll()
-            if(p.compareConf(p2, confres) && p.compareCoords(p2, resolution)) {
+            if(p.compareCoords(p2, resolution)) {
                 found = true
             } else {
                 templist.add(p2)
