@@ -17,6 +17,20 @@
         android:textAlignment="center" />
 
 
+    <Button
+        android:id="@+id/btnRemove"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginBottom="32dp"
+        android:text="Remove all"
+        app:layout_constraintBottom_toTopOf="@+id/catalogueFragment"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.951"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.051" />
+
     <FrameLayout
         android:id="@+id/loadingView"
         android:layout_width="0dp"
@@ -27,7 +41,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="visible">
+        tools:visibility="gone">
 
         <com.google.android.material.progressindicator.CircularProgressIndicator
             android:layout_width="wrap_content"
@@ -36,6 +50,7 @@
             android:indeterminate="true"
             app:indicatorSize="64dp"
             app:trackColor="#3FFFFFFF" />
+
     </FrameLayout>
 
     <TextView

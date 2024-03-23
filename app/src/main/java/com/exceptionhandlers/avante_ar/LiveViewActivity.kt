@@ -80,6 +80,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
     private var visibleItems = mutableListOf<CatalogItems>()
     private val depthRenderer = DepthRenderer()
     private val boxRenderer = BoxRenderer()
+    private lateinit var btnRemove: Button
 
 
     //Used as a flag and displaying loading icon (Not showing rn)
@@ -127,6 +128,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
         setContentView(R.layout.activity_live_view)
         //Anson thing
         touchSlop = ViewConfiguration.get(this).scaledTouchSlop
+        btnRemove = findViewById(R.id.btnRemove)
 
         if(savedInstanceState == null){
 
@@ -138,7 +140,12 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
             }
         }
 
-
+        btnRemove.setOnClickListener {
+            for(item in anchorsWithNodes){
+                sceneViewPort.removeChildNode(item.first)
+                anchorsWithNodes.remove(item)
+            }
+        }
 
         val btnBack = findViewById<Button>(R.id.btnBack)
 
@@ -272,7 +279,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
         }
 
-        
+
         try {
             // Create the texture and pass it to ARCore session to be filled during update().
 
