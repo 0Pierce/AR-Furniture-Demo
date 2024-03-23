@@ -34,11 +34,11 @@ import io.github.sceneview.ar.getDescription
 import io.github.sceneview.ar.node.AnchorNode
 import io.github.sceneview.math.Position
 import io.github.sceneview.node.ModelNode
-import kotlinx.coroutines.flow.internal.NoOpContinuation.context
+
 
 import kotlinx.coroutines.launch
 import java.io.IOException
-import kotlin.coroutines.jvm.internal.CompletedContinuation.context
+
 
 
 /*
@@ -125,6 +125,9 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_live_view)
+        //Anson thing
+        touchSlop = ViewConfiguration.get(this).scaledTouchSlop
+
         if(savedInstanceState == null){
 
             supportFragmentManager.commit{
@@ -672,16 +675,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
     // Variable to store the touch slop value
     private var touchSlop = 0
 
-    @SuppressLint("ClickableViewAccessibility")
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_live_view)
 
-        // Initialize the touch slop value using ViewConfiguration
-        touchSlop = ViewConfiguration.get(this).scaledTouchSlop
-
-        // Other existing code...
-    }
 
 
     // Method to select an item
