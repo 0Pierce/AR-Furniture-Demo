@@ -143,8 +143,9 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
         btnRemove.setOnClickListener {
             for(item in anchorsWithNodes){
                 sceneViewPort.removeChildNode(item.first)
-                anchorsWithNodes.remove(item)
             }
+            anchorsWithNodes.clear()
+
         }
 
         val btnBack = findViewById<Button>(R.id.btnBack)
