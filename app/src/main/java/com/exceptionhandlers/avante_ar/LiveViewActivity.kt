@@ -32,8 +32,10 @@ import io.github.sceneview.ar.getDescription
 import io.github.sceneview.ar.node.AnchorNode
 import io.github.sceneview.math.Position
 import io.github.sceneview.node.ModelNode
+
 import kotlinx.coroutines.launch
 import java.io.IOException
+
 
 /*
 *Name: LiveViewActivity
@@ -184,7 +186,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
             planeRenderer.isShadowReceiver = false
 
             //Buggy
-            cameraStream!!.isDepthOcclusionEnabled = true
+            //cameraStream!!.isDepthOcclusionEnabled = true
 
             //Unsure may need to remove
             //cameraStream!!.setCulling(true)
@@ -226,6 +228,8 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
             //On every new frame, it places an anchor, once enough anchors are placed a plane is rendered
             onSessionUpdated = { _, frame ->
+                //Adds the first anchor node
+                //Then never adds it again
                 if (anchorNode == null) {
                     //Gets the currently tracked planes if there are no anchor nodes
 
@@ -366,7 +370,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                         //Loads in the placeholder helmet model
 
                         //Change
-
+                        //If there isnt an item, put down place holder helmet
                         if(item == null){
                             sceneViewPort.modelLoader.loadModelInstance(
 
@@ -391,7 +395,9 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                          //and we dont have to change this
                          //Small future proofing
                         }else if(item != null){
+                            Log.d("model","Loading furniture")
                             val selectedPath = item.imgPath
+                            Log.d("model","Loading furniture"+ selectedPath)
                             sceneViewPort.modelLoader.loadModelInstance(
 
                                 selectedPath
@@ -439,9 +445,42 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
 
     override fun onCatalogItemSelected(item: CatalogItems) {
-        
+
         selectedItems.add(item)
-        addAnchorNode(item)
+//        sceneViewPort.frame?.getUpdatedPlanes()
+//            ?.firstOrNull{
+//                it.type == Plane.Type.HORIZONTAL_UPWARD_FACING }
+//            ?.let {plane ->
+//                Toast.makeText(this, "Called method 1", Toast.LENGTH_SHORT).show()
+//                addAnchorNode(plane.createAnchor(plane.centerPose),item ) }
+
+        val frame = sceneViewPort.session?.frame
+
+        // Find a suitable plane
+        val plane = frame?.getUpdatedPlanes()?.first()
+
+        //firstOrNull { it.type == Plane.Type.HORIZONTAL_UPWARD_FACING }
+
+        if(frame == null){
+            Log.d("model", "frame is null")
+        }
+        if(frame?.getUpdatedPlanes()?.firstOrNull() == null){
+            Log.d("model", "No planes")
+
+        }
+
+        if(plane == null){
+            Log.d("model", "plane is null")
+        }else{
+            Log.d("model", "plane is NOT null")
+        }
+        // Create an anchor at the center of the plane
+        plane?.let {
+            val anchor = it.createAnchor(it.centerPose)
+            // Call addAnchorNode with the created anchor and the selected item
+            Toast.makeText(this, "Loading model", Toast.LENGTH_SHORT).show()
+            addAnchorNode(anchor, item)
+        }
         Toast.makeText(this, "Item selected: ${item.name}", Toast.LENGTH_SHORT).show()
     }
 
