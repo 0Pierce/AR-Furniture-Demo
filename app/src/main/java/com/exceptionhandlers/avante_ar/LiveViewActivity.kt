@@ -28,6 +28,7 @@ import com.google.ar.core.TrackingState
 import com.google.ar.core.exceptions.NotYetAvailableException
 import io.github.sceneview.ar.ARSceneView
 import io.github.sceneview.ar.arcore.getUpdatedPlanes
+import io.github.sceneview.ar.arcore.getUpdatedTrackables
 import io.github.sceneview.ar.getDescription
 import io.github.sceneview.ar.node.AnchorNode
 import io.github.sceneview.math.Position
@@ -228,18 +229,20 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
             //On every new frame, it places an anchor, once enough anchors are placed a plane is rendered
             onSessionUpdated = { _, frame ->
-                //Adds the first anchor node
-                //Then never adds it again
                 if (anchorNode == null) {
                     //Gets the currently tracked planes if there are no anchor nodes
+                    Log.d("model", "frame Helmet: "+frame)
 
                     frame.getUpdatedPlanes()
                         //A iterable interface checking if the current plane is a flat surfaces
                         .firstOrNull { it.type == Plane.Type.HORIZONTAL_UPWARD_FACING }
+
                         //If yes, create a new anchor node at the center and track it
                         ?.let { plane ->
+                            Log.d("model","frame Helmet in: "+plane)
                             addAnchorNode(plane.createAnchor(plane.centerPose))
                         }
+                    //Log.d("model", "frame Helmet: "+frame?.getUpdatedPlanes()?.firstOrNull { it.type == Plane.Type.HORIZONTAL_UPWARD_FACING })
 
 
 
@@ -346,7 +349,9 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
     //Adding a new anchor based on a anchor position
     fun addAnchorNode(anchor: Anchor, item: CatalogItems? = null) {
         Toast.makeText(this, "Anchor", Toast.LENGTH_SHORT).show()
-
+        if (item != null) {
+            Log.d("model","Placing: " +item.name)
+        }
 
 
 
@@ -457,15 +462,13 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
         val frame = sceneViewPort.session?.frame
 
         // Find a suitable plane
-        val plane = frame?.getUpdatedPlanes()?.first()
-
-        //firstOrNull { it.type == Plane.Type.HORIZONTAL_UPWARD_FACING }
+        val plane = frame?.getUpdatedPlanes()?.firstOrNull { it.type == Plane.Type.HORIZONTAL_UPWARD_FACING }
 
         if(frame == null){
             Log.d("model", "frame is null")
         }
         if(frame?.getUpdatedPlanes()?.firstOrNull() == null){
-            Log.d("model", "No planes")
+            Log.d("model", " is null")
 
         }
 
@@ -475,12 +478,44 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
             Log.d("model", "plane is NOT null")
         }
         // Create an anchor at the center of the plane
-        plane?.let {
-            val anchor = it.createAnchor(it.centerPose)
-            // Call addAnchorNode with the created anchor and the selected item
-            Toast.makeText(this, "Loading model", Toast.LENGTH_SHORT).show()
-            addAnchorNode(anchor, item)
-        }
+//        plane?.let {
+//            val anchor = it.createAnchor(it.centerPose)
+//            // Call addAnchorNode with the created anchor and the selected item
+//            Toast.makeText(this, "Loading model", Toast.LENGTH_SHORT).show()
+//            addAnchorNode(anchor, item)
+//        }
+//        var planeFlag : Boolean  = false
+//        while(planeFlag != true){
+//            sceneViewPort.onSessionUpdated = { _, frame ->
+//                if( frame.getUpdatedPlanes() != null){
+//                    //Gets the currently tracked planes if there are no anchor nodes
+//                    Log.d("model", "frame Helmet: "+frame)
+//
+//                    frame.getUpdatedPlanes()
+//                        //A iterable interface checking if the current plane is a flat surfaces
+//                        .firstOrNull { it.type == Plane.Type.HORIZONTAL_UPWARD_FACING }
+//
+//                        //If yes, create a new anchor node at the center and track it
+//                        //**NOTE** TODO
+//                        //ADD CHECK IF PLANE IS BEING TRACKED
+//                        ?.let { plane ->
+//                            Log.d("model","frame Helmet in: "+plane)
+//                            addAnchorNode(plane.createAnchor(plane.centerPose),item)
+//                        }
+//                    //Log.d("model", "frame Helmet: "+frame?.getUpdatedPlanes()?.firstOrNull { it.type == Plane.Type.HORIZONTAL_UPWARD_FACING })
+//
+//
+//                    planeFlag = true;
+//                }
+//
+//
+//
+//                //onDrawFrame()
+//            }
+//
+//        }
+
+
         Toast.makeText(this, "Item selected: ${item.name}", Toast.LENGTH_SHORT).show()
     }
 
