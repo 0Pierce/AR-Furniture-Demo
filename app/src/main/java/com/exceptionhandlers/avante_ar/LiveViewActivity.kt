@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewConfiguration
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
@@ -33,9 +34,11 @@ import io.github.sceneview.ar.getDescription
 import io.github.sceneview.ar.node.AnchorNode
 import io.github.sceneview.math.Position
 import io.github.sceneview.node.ModelNode
+import kotlinx.coroutines.flow.internal.NoOpContinuation.context
 
 import kotlinx.coroutines.launch
 import java.io.IOException
+import kotlin.coroutines.jvm.internal.CompletedContinuation.context
 
 
 /*
@@ -610,5 +613,57 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
         }
 
 
+    }
+    // Variable to store the selected anchor node
+    private var selectedAnchorNode: AnchorNode? = null
+
+    // Variable to store the touch slop value
+    private var touchSlop = 0
+
+    @SuppressLint("ClickableViewAccessibility")
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_live_view)
+
+        // Initialize the touch slop value using ViewConfiguration
+        touchSlop = ViewConfiguration.get(this).scaledTouchSlop
+
+        // Other existing code...
+    }
+
+
+    // Method to select an item
+    private fun selectItem(anchorNode: AnchorNode) {
+        selectedAnchorNode = anchorNode
+        // TO-DO: Can be used for other stuff but right now just for anchor deletion
+    }
+    private fun deleteSelectedItem() {
+        selectedAnchorNode?.let { anchorNode ->
+            // Remove the anchor node from the scene
+            sceneViewPort.removeChildNode(anchorNode)
+            // Remove the anchor node from the list of anchors with nodes
+            anchorsWithNodes.removeAll { it.first == anchorNode }
+            anchorCount--
+            selectedAnchorNode = null
+            updateInstructions()
+        }
+    }
+
+
+    // Method to handle long-click event
+    fun onItemLongClick(event: MotionEvent) {
+        // Iterate through all anchors to check if the long-click is near any anchor
+        for ((anchorNode, position) in anchorsWithNodes) {
+            // Calculate the distance between the long-click position and the anchor position
+            val distance = calculateDistance(Position(event.x, event.y), position)
+            // Check if the distance is within the touch slop (a threshold for considering it a long-click)
+            if (touchSlop > distance) {
+                // Select the anchor node
+                selectItem(anchorNode)
+                // Delete the selected item
+                deleteSelectedItem()
+                return
+            }
+        }
     }
 }
