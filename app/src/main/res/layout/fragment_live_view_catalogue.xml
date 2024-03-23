@@ -87,7 +87,6 @@
                     android:layout_height="80dp"
                     android:layout_gravity="center"
                     android:clickable="true"
-                    android:onClick="onShelfClick"
                     android:src="@drawable/shelf" />
 
                 <TextView

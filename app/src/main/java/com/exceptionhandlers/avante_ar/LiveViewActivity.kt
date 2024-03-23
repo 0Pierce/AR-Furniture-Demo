@@ -74,6 +74,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
     private lateinit var myAnchor : Anchor
 
     private var selectedItems = mutableListOf<CatalogItems>()
+    private var visibleItems = mutableListOf<CatalogItems>()
     private val depthRenderer = DepthRenderer()
     private val boxRenderer = BoxRenderer()
 
@@ -160,6 +161,12 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
         btnCatOpen.setOnClickListener{
             catalogue.isVisible = true
             btnCatClose.isVisible = true
+            supportFragmentManager.commit{
+                setReorderingAllowed(true)
+                //val fragment = LiveViewCatalogue()
+                add<LiveViewCatalogue>(R.id.catalogueFragment)
+
+            }
         }
 
         btnCatClose.setOnClickListener{
@@ -299,7 +306,19 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
         }
 
         sceneViewPort.setOnTouchListener { _, event ->
-            handleTouchEvent(event)
+
+            //Makes sure we dont get the helmet when placing cat items
+            if(selectedItems.isEmpty()){
+                handleTouchEvent(event)
+            }
+
+
+
+            //Only newly selected items will be here
+            //And they will trigger the onTouch
+            if(selectedItems.isNotEmpty()){
+                spawnCatItem(event)
+            }
             true
         }
 
@@ -309,6 +328,37 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
     }
 
+    private fun spawnCatItem(event : MotionEvent){
+
+
+
+        if (event.action == MotionEvent.ACTION_DOWN) {
+            var x : Float = 0.0f
+            var y : Float = 0.0f
+          for(item in selectedItems){
+
+              try {
+                  val hitResult = sceneViewPort.frame?.hitTest(event.x+x, event.y+y)?.firstOrNull()
+
+                  hitResult?.let {
+                      val anchor = sceneViewPort.session?.createAnchor(hitResult.hitPose)
+
+                      anchor?.let { addAnchorNode(it, item) }
+                      x += 0.5f
+                      y += 0.5f
+
+                      visibleItems.add(item)
+                  }
+              } catch (e: NotYetAvailableException) {
+                  e.printStackTrace()
+              }
+
+          }
+            selectedItems.clear()
+
+
+        }
+    }
 
     //Measure distance
     private fun handleTouchEvent(event: MotionEvent) {
@@ -402,7 +452,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                         }else if(item != null){
                             Log.d("model","Loading furniture")
                             val selectedPath = item.imgPath
-                            Log.d("model","Loading furniture"+ selectedPath)
+                            Log.d("model","Loading furniture: "+ selectedPath)
                             sceneViewPort.modelLoader.loadModelInstance(
 
                                 selectedPath
@@ -451,6 +501,8 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
     override fun onCatalogItemSelected(item: CatalogItems) {
 
+
+
         selectedItems.add(item)
 //        sceneViewPort.frame?.getUpdatedPlanes()
 //            ?.firstOrNull{
@@ -459,24 +511,24 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 //                Toast.makeText(this, "Called method 1", Toast.LENGTH_SHORT).show()
 //                addAnchorNode(plane.createAnchor(plane.centerPose),item ) }
 
-        val frame = sceneViewPort.session?.frame
-
-        // Find a suitable plane
-        val plane = frame?.getUpdatedPlanes()?.firstOrNull { it.type == Plane.Type.HORIZONTAL_UPWARD_FACING }
-
-        if(frame == null){
-            Log.d("model", "frame is null")
-        }
-        if(frame?.getUpdatedPlanes()?.firstOrNull() == null){
-            Log.d("model", " is null")
-
-        }
-
-        if(plane == null){
-            Log.d("model", "plane is null")
-        }else{
-            Log.d("model", "plane is NOT null")
-        }
+//        val frame = sceneViewPort.session?.frame
+//
+//        // Find a suitable plane
+//        val plane = frame?.getUpdatedPlanes()?.firstOrNull { it.type == Plane.Type.HORIZONTAL_UPWARD_FACING }
+//
+//        if(frame == null){
+//            Log.d("model", "frame is null")
+//        }
+//        if(frame?.getUpdatedPlanes()?.firstOrNull() == null){
+//            Log.d("model", " is null")
+//
+//        }
+//
+//        if(plane == null){
+//            Log.d("model", "plane is null")
+//        }else{
+//            Log.d("model", "plane is NOT null")
+//        }
         // Create an anchor at the center of the plane
 //        plane?.let {
 //            val anchor = it.createAnchor(it.centerPose)

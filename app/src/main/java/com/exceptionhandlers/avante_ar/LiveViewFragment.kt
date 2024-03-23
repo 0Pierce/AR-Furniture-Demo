@@ -331,10 +331,7 @@ class LiveViewFragment : Fragment(R.layout.fragment_live_view)   {
         }
     }
 
-    fun onShelfClick(view: View) {
-        // Add shelf to AR scene
 
-    }
 
 
 

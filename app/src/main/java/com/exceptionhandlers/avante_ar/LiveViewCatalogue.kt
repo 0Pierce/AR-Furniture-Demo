@@ -72,8 +72,8 @@ class LiveViewCatalogue : Fragment(R.layout.fragment_live_view_catalogue) {
 
     fun menu(view: View) {
         var itemsList = listOf(
-            CatalogItems(name = "shelf", imgPath = "/assets/models/book_shelf.glb"),
-            CatalogItems(name = "sofa", imgPath = "/assets/models/sofa_single.glb")
+            CatalogItems(name = "shelf", imgPath = "models/book_shelf.glb"),
+            CatalogItems(name = "sofa", imgPath = "models/sofa_single.glb")
         )
         val size = itemsList.size
         for (furniture in itemsList) {
