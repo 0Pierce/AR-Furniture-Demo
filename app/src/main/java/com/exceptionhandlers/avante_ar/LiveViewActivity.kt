@@ -86,7 +86,6 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
     private val depthRenderer = DepthRenderer()
     private val boxRenderer = BoxRenderer()
     private lateinit var btnRemove: Button
-
     lateinit var navMenuToggle : ActionBarDrawerToggle
 
 
@@ -134,7 +133,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_live_view)
 
-
+        //Sets the toggle to open and close the sliding menu
         var drawerMenuLayout = findViewById<DrawerLayout>(R.id.drawerMenuLayout)
         navMenuToggle = ActionBarDrawerToggle(this, drawerMenuLayout, R.string.open, R.string.close)
 
@@ -144,31 +143,28 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
         var navView = findViewById<NavigationView>(R.id.navView)
         val btnCatClose = findViewById<ImageButton>(R.id.imgBtnCatClose)
-        //val btnCatOpen = findViewById<ImageButton>(R.id.imgBtnCatOpen)
+
+        //Handles the sliding menu item clicks
         navView.setNavigationItemSelectedListener {
             when(it.itemId){
 
                 //Catalogue button
                 R.id.btnOne -> {
 
-
-
+                        
+                        TouchListener()
                         catalogue.isVisible = true
                         btnCatClose.isVisible = true
                         supportFragmentManager.commit{
                             setReorderingAllowed(true)
                             //val fragment = LiveViewCatalogue()
                             add<LiveViewCatalogue>(R.id.catalogueFragment)
-
                         }
                     drawerMenuLayout.closeDrawer(GravityCompat.START)
 
                 }
-
                 //Depth button
                 R.id.btnTwo -> {
-
-
                         Toast.makeText(this, "Clicked", Toast.LENGTH_SHORT).show()
                         Log.d("depth", "Loaded Class")
 
@@ -182,11 +178,9 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                                 it.createAnchor(camera.getPose())
                             )
                         }
-
                     //onDrawFrame(sessionFR)
 
                 }
-
                 //Remove all button
                 R.id.btnThree -> {
                     if(anchorsWithNodes.isEmpty()){
@@ -195,7 +189,6 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                         for(item in anchorsWithNodes){
                             sceneViewPort.removeChildNode(item.first)
                         }
-
                         Toast.makeText(applicationContext, "Removed all models", Toast.LENGTH_SHORT).show()
                         anchorsWithNodes.clear()
                     }
@@ -222,16 +215,6 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
             }
         }
-
-//        btnRemove.setOnClickListener {
-//            for(item in anchorsWithNodes){
-//                sceneViewPort.removeChildNode(item.first)
-//            }
-//
-//
-//            anchorsWithNodes.clear()
-//
-//        }
 
         val btnBack = findViewById<Button>(R.id.btnBack)
 
@@ -348,23 +331,39 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
             Log.d("depth", "Cant init renderer: "+ e)
         }
 
+    }
+
+
+    @SuppressLint("ClickableViewAccessibility")
+    private fun TouchListener(){
+        Log.d("touch","Entered TouchListener")
+
         //Screen touch listener
-        sceneViewPort.setOnTouchListener { _, event ->
 
-            //Makes sure we dont get the helmet when placing cat items
-            if(selectedItems.isEmpty()){
-                handleTouchEvent(event)
+            //Log.d("touch","Ran loop")
+            sceneViewPort.setOnTouchListener { _, event ->
+
+                //Makes sure we dont get the helmet when placing cat items
+                if(selectedItems.isEmpty()){
+                    Log.d("touch","Placed Helmet")
+                    sceneViewPort.setOnTouchListener(null)
+                    handleTouchEvent(event)
+                }
+
+                //Only newly selected items will be here
+                //And they will trigger the onTouch
+                if(selectedItems.isNotEmpty()){
+                    Log.d("touch","Placed Cat Item")
+                    sceneViewPort.setOnTouchListener(null)
+                    spawnCatItem(event)
+                }
+                true
             }
 
-            //Only newly selected items will be here
-            //And they will trigger the onTouch
-            if(selectedItems.isNotEmpty()){
-                spawnCatItem(event)
-            }
-            true
-        }
+
 
     }
+
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
@@ -460,7 +459,6 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                         isLoading = true
                         //Loads in the placeholder helmet model
 
-                        //Change
                         //If there isnt an item, put down place holder helmet
                         if(item == null){
                             sceneViewPort.modelLoader.loadModelInstance(
