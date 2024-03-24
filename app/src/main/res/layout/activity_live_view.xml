@@ -1,10 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<androidx.drawerlayout.widget.DrawerLayout
+    android:id="@+id/drawerMenuLayout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LiveViewActivity">
+    tools:context=".LiveViewActivity"
+
+    >
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+
 
     <!--Viewport fragment (AR fragment)-->
 
@@ -17,19 +28,19 @@
         android:textAlignment="center" />
 
 
-    <Button
-        android:id="@+id/btnRemove"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginBottom="32dp"
-        android:text="Remove all"
-        app:layout_constraintBottom_toTopOf="@+id/catalogueFragment"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.951"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.051" />
+<!--    <Button-->
+<!--        android:id="@+id/btnRemove"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginStart="32dp"-->
+<!--        android:layout_marginBottom="32dp"-->
+<!--        android:text="Remove all"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/catalogueFragment"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.951"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintVertical_bias="0.051" />-->
 
     <FrameLayout
         android:id="@+id/loadingView"
@@ -66,21 +77,21 @@
         app:layout_constraintTop_toTopOf="parent" />
 
 
-    <ImageButton
-        android:id="@+id/imgBtnCatOpen"
-        android:layout_width="70dp"
-        android:layout_height="73dp"
-        android:background="@null"
-        android:rotation="90"
-        android:scaleType="fitCenter"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.897"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.975"
-        app:srcCompat="@drawable/cat_arrow" />
+<!--    <ImageButton-->
+<!--        android:id="@+id/imgBtnCatOpen"-->
+<!--        android:layout_width="70dp"-->
+<!--        android:layout_height="73dp"-->
+<!--        android:background="@null"-->
+<!--        android:rotation="90"-->
+<!--        android:scaleType="fitCenter"-->
+<!--        android:visibility="visible"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.897"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintVertical_bias="0.975"-->
+<!--        app:srcCompat="@drawable/cat_arrow" />-->
 
     <Button
         android:id="@+id/btnBack"
@@ -120,17 +131,38 @@
         app:layout_constraintVertical_bias="0.571"
         app:srcCompat="@drawable/cat_arrow" />
 
-    <Button
-        android:id="@+id/btnDepth"
-        android:layout_width="122dp"
-        android:layout_height="64dp"
-        android:text="Depth"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/imgBtnCatOpen"
-        app:layout_constraintHorizontal_bias="0.375"
-        app:layout_constraintStart_toEndOf="@+id/btnBack"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.976" />
+<!--    <Button-->
+<!--        android:id="@+id/btnDepth"-->
+<!--        android:layout_width="122dp"-->
+<!--        android:layout_height="64dp"-->
+<!--        android:text="Depth"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toStartOf="@+id/imgBtnCatOpen"-->
+<!--        app:layout_constraintHorizontal_bias="0.375"-->
+<!--        app:layout_constraintStart_toEndOf="@+id/btnBack"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintVertical_bias="0.976" />-->
+
+
+
+
+
+
+
+
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/navView"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        app:headerLayout="@layout/nav_header"
+        app:menu="@menu/nav_menu"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"/>
+    
+</androidx.drawerlayout.widget.DrawerLayout>

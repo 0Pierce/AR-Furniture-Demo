@@ -6,4 +6,6 @@
     </style>
 
     <style name="Theme.AvanteAR" parent="Base.Theme.AvanteAR" />
+
+    <style name="Theme.AvanteActionBar" parent="Theme.AppCompat.Light.DarkActionBar" />
 </resources>

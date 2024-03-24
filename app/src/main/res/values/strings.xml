@@ -13,4 +13,9 @@
     <string name="best_placement">Best Placement</string>
     <string name="point_your_phone_down">Point your phone down at an empty space, and move it around slowly</string>
     <string name="max_anchors_reached">Max reached</string>
+    <string name="btnDepth">Depth</string>
+    <string name="btnCat">Catalogue</string>
+    <string name="btnRemoveAll">Remove all</string>
+    <string name="open">Open</string>
+    <string name="close">Close</string>
 </resources>

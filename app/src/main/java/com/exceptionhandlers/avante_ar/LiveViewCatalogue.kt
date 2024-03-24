@@ -13,6 +13,8 @@ import com.exceptionhandlers.avante_ar.LiveViewActivity
 
 
 interface OnCatalogItemSelectedListener {
+
+
     fun onCatalogItemSelected(item: CatalogItems)
 
 }

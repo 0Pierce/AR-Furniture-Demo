@@ -5,6 +5,7 @@ import android.content.Intent
 import android.opengl.GLES20
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
@@ -13,13 +14,17 @@ import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import android.widget.ToggleButton
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.add
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.navigation.NavigationView
 import com.google.ar.core.Anchor
 import com.google.ar.core.Config
 import com.google.ar.core.Frame
@@ -82,6 +87,8 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
     private val boxRenderer = BoxRenderer()
     private lateinit var btnRemove: Button
 
+    lateinit var navMenuToggle : ActionBarDrawerToggle
+
 
     //Used as a flag and displaying loading icon (Not showing rn)
     var isLoading = false
@@ -126,9 +133,83 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_live_view)
+
+
+        var drawerMenuLayout = findViewById<DrawerLayout>(R.id.drawerMenuLayout)
+        navMenuToggle = ActionBarDrawerToggle(this, drawerMenuLayout, R.string.open, R.string.close)
+
+        drawerMenuLayout.addDrawerListener(navMenuToggle)
+        navMenuToggle.syncState()
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        var navView = findViewById<NavigationView>(R.id.navView)
+        val btnCatClose = findViewById<ImageButton>(R.id.imgBtnCatClose)
+        //val btnCatOpen = findViewById<ImageButton>(R.id.imgBtnCatOpen)
+        navView.setNavigationItemSelectedListener {
+            when(it.itemId){
+
+                //Catalogue button
+                R.id.btnOne -> {
+
+
+
+                        catalogue.isVisible = true
+                        btnCatClose.isVisible = true
+                        supportFragmentManager.commit{
+                            setReorderingAllowed(true)
+                            //val fragment = LiveViewCatalogue()
+                            add<LiveViewCatalogue>(R.id.catalogueFragment)
+
+                        }
+                    drawerMenuLayout.closeDrawer(GravityCompat.START)
+
+                }
+
+                //Depth button
+                R.id.btnTwo -> {
+
+
+                        Toast.makeText(this, "Clicked", Toast.LENGTH_SHORT).show()
+                        Log.d("depth", "Loaded Class")
+
+                        var frameG = sceneViewPort.session?.frame
+                        var sessionFR = sceneViewPort.session
+
+                        val camera = frameG!!.getCamera()
+                        sessionFR?.let { it ->
+                            DepthData.create(
+                                frameG,
+                                it.createAnchor(camera.getPose())
+                            )
+                        }
+
+                }
+
+                //Remove all button
+                R.id.btnThree -> {
+                    if(anchorsWithNodes.isEmpty()){
+                        Toast.makeText(applicationContext, "Nothing to remove", Toast.LENGTH_SHORT).show()
+                    }else{
+                        for(item in anchorsWithNodes){
+                            sceneViewPort.removeChildNode(item.first)
+                        }
+
+                        Toast.makeText(applicationContext, "Removed all models", Toast.LENGTH_SHORT).show()
+                        anchorsWithNodes.clear()
+                    }
+
+                }
+
+
+            }
+            true
+
+        }
+
+
         //Anson thing
         touchSlop = ViewConfiguration.get(this).scaledTouchSlop
-        btnRemove = findViewById(R.id.btnRemove)
+        //btnRemove = findViewById(R.id.btnRemove)
 
         if(savedInstanceState == null){
 
@@ -140,13 +221,15 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
             }
         }
 
-        btnRemove.setOnClickListener {
-            for(item in anchorsWithNodes){
-                sceneViewPort.removeChildNode(item.first)
-            }
-            anchorsWithNodes.clear()
-
-        }
+//        btnRemove.setOnClickListener {
+//            for(item in anchorsWithNodes){
+//                sceneViewPort.removeChildNode(item.first)
+//            }
+//
+//
+//            anchorsWithNodes.clear()
+//
+//        }
 
         val btnBack = findViewById<Button>(R.id.btnBack)
 
@@ -158,8 +241,8 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
 
         catalogue=findViewById(R.id.catalogueFragment)
-        val btnCatOpen = findViewById<ImageButton>(R.id.imgBtnCatOpen)
-        val btnCatClose = findViewById<ImageButton>(R.id.imgBtnCatClose)
+
+
         catalogue.isVisible = false
 
 
@@ -171,17 +254,17 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 //            startActivity(Intent(this, HomePageActivity::class.java))
 //
 //        }
-
-        btnCatOpen.setOnClickListener{
-            catalogue.isVisible = true
-            btnCatClose.isVisible = true
-            supportFragmentManager.commit{
-                setReorderingAllowed(true)
-                //val fragment = LiveViewCatalogue()
-                add<LiveViewCatalogue>(R.id.catalogueFragment)
-
-            }
-        }
+//        val btnCatOpen = findViewById<ImageButton>(R.id.imgBtnCatOpen)
+//        btnCatOpen.setOnClickListener{
+//            catalogue.isVisible = true
+//            btnCatClose.isVisible = true
+//            supportFragmentManager.commit{
+//                setReorderingAllowed(true)
+//                //val fragment = LiveViewCatalogue()
+//                add<LiveViewCatalogue>(R.id.catalogueFragment)
+//
+//            }
+//        }
 
         btnCatClose.setOnClickListener{
             val fragment = supportFragmentManager.findFragmentById(R.id.catalogueFragment)
@@ -247,7 +330,6 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
             }
 
 
-
             //On every new frame, it places an anchor, once enough anchors are placed a plane is rendered
             onSessionUpdated = { _, frame ->
                 if (anchorNode == null) {
@@ -264,8 +346,6 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                             addAnchorNode(plane.createAnchor(plane.centerPose))
                         }
                     //Log.d("model", "frame Helmet: "+frame?.getUpdatedPlanes()?.firstOrNull { it.type == Plane.Type.HORIZONTAL_UPWARD_FACING })
-
-
 
 
                 }
@@ -291,34 +371,32 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
             Log.d("depth", "Cant init renderer: "+ e)
         }
 
-        var btnDepth = findViewById<Button>(R.id.btnDepth)
+//        var btnDepth = findViewById<Button>(R.id.btnDepth)
+//        btnDepth.setOnClickListener {
+//                Toast.makeText(this, "Clicked", Toast.LENGTH_SHORT).show()
+//                Log.d("depth", "Loaded Class")
+//
+//                var frameG = sceneViewPort.session?.frame
+//                var sessionFR = sceneViewPort.session
+//
+//                val camera = frameG!!.getCamera()
+//                sessionFR?.let { it ->
+//                    DepthData.create(
+//                        frameG,
+//                        it.createAnchor(camera.getPose()))
+//                }
+//
+//                //onDrawFrame(sessionFR)
+//            // Retrieve the depth data for this frame.
+//
+//            // Retrieve the depth data for this frame.
+//
+//
+//
+//
+//        }
 
-
-
-        btnDepth.setOnClickListener {
-                Toast.makeText(this, "Clicked", Toast.LENGTH_SHORT).show()
-                Log.d("depth", "Loaded Class")
-
-                var frameG = sceneViewPort.session?.frame
-                var sessionFR = sceneViewPort.session
-
-                val camera = frameG!!.getCamera()
-                sessionFR?.let { it ->
-                    DepthData.create(
-                        frameG,
-                        it.createAnchor(camera.getPose()))
-                }
-
-                //onDrawFrame(sessionFR)
-            // Retrieve the depth data for this frame.
-
-            // Retrieve the depth data for this frame.
-
-
-
-
-        }
-
+        //Screen touch listener
         sceneViewPort.setOnTouchListener { _, event ->
 
             //Makes sure we dont get the helmet when placing cat items
@@ -340,6 +418,16 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
 
 
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        //Returns true so we know the user clicked on this specific item
+        if(navMenuToggle.onOptionsItemSelected(item)){
+            return true
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 
     private fun spawnCatItem(event : MotionEvent){
@@ -498,7 +586,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
         val anchorNodePair = Pair(anchorNode, position)
         anchorsWithNodes.add(anchorNodePair as Pair<AnchorNode, Position>)
 
-        anchorCount++
+        anchorCount = anchorsWithNodes.size
 
 // Update instructions or perform any other actions when the limit is reached
         if (anchorCount >= 4) {
@@ -514,74 +602,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
 
     override fun onCatalogItemSelected(item: CatalogItems) {
-
-
-
         selectedItems.add(item)
-//        sceneViewPort.frame?.getUpdatedPlanes()
-//            ?.firstOrNull{
-//                it.type == Plane.Type.HORIZONTAL_UPWARD_FACING }
-//            ?.let {plane ->
-//                Toast.makeText(this, "Called method 1", Toast.LENGTH_SHORT).show()
-//                addAnchorNode(plane.createAnchor(plane.centerPose),item ) }
-
-//        val frame = sceneViewPort.session?.frame
-//
-//        // Find a suitable plane
-//        val plane = frame?.getUpdatedPlanes()?.firstOrNull { it.type == Plane.Type.HORIZONTAL_UPWARD_FACING }
-//
-//        if(frame == null){
-//            Log.d("model", "frame is null")
-//        }
-//        if(frame?.getUpdatedPlanes()?.firstOrNull() == null){
-//            Log.d("model", " is null")
-//
-//        }
-//
-//        if(plane == null){
-//            Log.d("model", "plane is null")
-//        }else{
-//            Log.d("model", "plane is NOT null")
-//        }
-        // Create an anchor at the center of the plane
-//        plane?.let {
-//            val anchor = it.createAnchor(it.centerPose)
-//            // Call addAnchorNode with the created anchor and the selected item
-//            Toast.makeText(this, "Loading model", Toast.LENGTH_SHORT).show()
-//            addAnchorNode(anchor, item)
-//        }
-//        var planeFlag : Boolean  = false
-//        while(planeFlag != true){
-//            sceneViewPort.onSessionUpdated = { _, frame ->
-//                if( frame.getUpdatedPlanes() != null){
-//                    //Gets the currently tracked planes if there are no anchor nodes
-//                    Log.d("model", "frame Helmet: "+frame)
-//
-//                    frame.getUpdatedPlanes()
-//                        //A iterable interface checking if the current plane is a flat surfaces
-//                        .firstOrNull { it.type == Plane.Type.HORIZONTAL_UPWARD_FACING }
-//
-//                        //If yes, create a new anchor node at the center and track it
-//                        //**NOTE** TODO
-//                        //ADD CHECK IF PLANE IS BEING TRACKED
-//                        ?.let { plane ->
-//                            Log.d("model","frame Helmet in: "+plane)
-//                            addAnchorNode(plane.createAnchor(plane.centerPose),item)
-//                        }
-//                    //Log.d("model", "frame Helmet: "+frame?.getUpdatedPlanes()?.firstOrNull { it.type == Plane.Type.HORIZONTAL_UPWARD_FACING })
-//
-//
-//                    planeFlag = true;
-//                }
-//
-//
-//
-//                //onDrawFrame()
-//            }
-//
-//        }
-
-
         Toast.makeText(this, "Item selected: ${item.name}", Toast.LENGTH_SHORT).show()
     }
 
@@ -697,7 +718,6 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
             sceneViewPort.removeChildNode(anchorNode)
             // Remove the anchor node from the list of anchors with nodes
             anchorsWithNodes.removeAll { it.first == anchorNode }
-            anchorCount--
             selectedAnchorNode = null
             updateInstructions()
         }
