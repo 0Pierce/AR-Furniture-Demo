@@ -183,6 +183,8 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                             )
                         }
 
+                    //onDrawFrame(sessionFR)
+
                 }
 
                 //Remove all button
@@ -239,32 +241,8 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
         }
 
-
         catalogue=findViewById(R.id.catalogueFragment)
-
-
         catalogue.isVisible = false
-
-
-
-
-
-//        catBind.TestBtn.setOnClickListener{
-//            Toast.makeText(this, "Clicked", Toast.LENGTH_SHORT).show()
-//            startActivity(Intent(this, HomePageActivity::class.java))
-//
-//        }
-//        val btnCatOpen = findViewById<ImageButton>(R.id.imgBtnCatOpen)
-//        btnCatOpen.setOnClickListener{
-//            catalogue.isVisible = true
-//            btnCatClose.isVisible = true
-//            supportFragmentManager.commit{
-//                setReorderingAllowed(true)
-//                //val fragment = LiveViewCatalogue()
-//                add<LiveViewCatalogue>(R.id.catalogueFragment)
-//
-//            }
-//        }
 
         btnCatClose.setOnClickListener{
             val fragment = supportFragmentManager.findFragmentById(R.id.catalogueFragment)
@@ -274,7 +252,6 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
             catalogue.isVisible = false
             btnCatClose.isVisible = false
         }
-
 
 
         //Gets the instruction Text ID(Changes text at top of screen nothing else)
@@ -371,31 +348,6 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
             Log.d("depth", "Cant init renderer: "+ e)
         }
 
-//        var btnDepth = findViewById<Button>(R.id.btnDepth)
-//        btnDepth.setOnClickListener {
-//                Toast.makeText(this, "Clicked", Toast.LENGTH_SHORT).show()
-//                Log.d("depth", "Loaded Class")
-//
-//                var frameG = sceneViewPort.session?.frame
-//                var sessionFR = sceneViewPort.session
-//
-//                val camera = frameG!!.getCamera()
-//                sessionFR?.let { it ->
-//                    DepthData.create(
-//                        frameG,
-//                        it.createAnchor(camera.getPose()))
-//                }
-//
-//                //onDrawFrame(sessionFR)
-//            // Retrieve the depth data for this frame.
-//
-//            // Retrieve the depth data for this frame.
-//
-//
-//
-//
-//        }
-
         //Screen touch listener
         sceneViewPort.setOnTouchListener { _, event ->
 
@@ -404,8 +356,6 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                 handleTouchEvent(event)
             }
 
-
-
             //Only newly selected items will be here
             //And they will trigger the onTouch
             if(selectedItems.isNotEmpty()){
@@ -413,10 +363,6 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
             }
             true
         }
-
-
-
-
 
     }
 
@@ -431,8 +377,6 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
     }
 
     private fun spawnCatItem(event : MotionEvent){
-
-
 
         if (event.action == MotionEvent.ACTION_DOWN) {
             var x : Float = 0.0f
@@ -491,23 +435,13 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
     }
 
 
-
-
     private var anchorsWithNodes = mutableListOf<Pair<AnchorNode, Position>>()
-
-
-
-
     //Adding a new anchor based on a anchor position
     fun addAnchorNode(anchor: Anchor, item: CatalogItems? = null) {
         Toast.makeText(this, "Anchor", Toast.LENGTH_SHORT).show()
         if (item != null) {
             Log.d("model","Placing: " +item.name)
         }
-
-
-
-
 
         sceneViewPort.addChildNode(
             //AnchorNode constructor call, passing along the viewPort engine and anchor position
@@ -599,13 +533,10 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
     }
 
 
-
-
     override fun onCatalogItemSelected(item: CatalogItems) {
         selectedItems.add(item)
         Toast.makeText(this, "Item selected: ${item.name}", Toast.LENGTH_SHORT).show()
     }
-
 
 
     private fun isTracking(): Boolean {
@@ -613,7 +544,6 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
         Log.d("depth", "0: "+frame?.camera?.getTrackingFailureReason().toString())
         return frame?.camera?.trackingState == TrackingState.TRACKING
     }
-
 
 
      fun onDrawFrame() {
