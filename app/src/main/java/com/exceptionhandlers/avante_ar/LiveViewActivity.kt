@@ -29,12 +29,16 @@ import com.google.ar.core.Anchor
 import com.google.ar.core.Config
 import com.google.ar.core.Frame
 import com.google.ar.core.Plane
+import com.google.ar.core.Pose
 import com.google.ar.core.TrackingFailureReason
 import com.google.ar.core.TrackingState
 import com.google.ar.core.exceptions.NotYetAvailableException
 import io.github.sceneview.ar.ARSceneView
 import io.github.sceneview.ar.arcore.getUpdatedPlanes
 import io.github.sceneview.ar.arcore.getUpdatedTrackables
+import io.github.sceneview.ar.arcore.xDirection
+import io.github.sceneview.ar.arcore.yDirection
+import io.github.sceneview.ar.arcore.zDirection
 import io.github.sceneview.ar.getDescription
 import io.github.sceneview.ar.node.AnchorNode
 import io.github.sceneview.math.Position
@@ -87,6 +91,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
     private val boxRenderer = BoxRenderer()
     private lateinit var btnRemove: Button
     lateinit var navMenuToggle : ActionBarDrawerToggle
+    private var anchorsWithNodes = mutableListOf<Pair<AnchorNode, Position>>()
 
 
     //Used as a flag and displaying loading icon (Not showing rn)
@@ -133,6 +138,8 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_live_view)
 
+
+
         //Sets the toggle to open and close the sliding menu
         var drawerMenuLayout = findViewById<DrawerLayout>(R.id.drawerMenuLayout)
         navMenuToggle = ActionBarDrawerToggle(this, drawerMenuLayout, R.string.open, R.string.close)
@@ -151,7 +158,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                 //Catalogue button
                 R.id.btnOne -> {
 
-                        
+
                         TouchListener()
                         catalogue.isVisible = true
                         btnCatClose.isVisible = true
@@ -178,6 +185,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                                 it.createAnchor(camera.getPose())
                             )
                         }
+                    drawerMenuLayout.closeDrawer(GravityCompat.START)
                     //onDrawFrame(sessionFR)
 
                 }
@@ -188,11 +196,12 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                     }else{
                         for(item in anchorsWithNodes){
                             sceneViewPort.removeChildNode(item.first)
+                            item.first.detachAnchor()
                         }
                         Toast.makeText(applicationContext, "Removed all models", Toast.LENGTH_SHORT).show()
                         anchorsWithNodes.clear()
                     }
-
+                    drawerMenuLayout.closeDrawer(GravityCompat.START)
                 }
 
 
@@ -282,7 +291,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                 config.planeFindingMode = Config.PlaneFindingMode.HORIZONTAL_AND_VERTICAL
                 config.instantPlacementMode = Config.InstantPlacementMode.LOCAL_Y_UP
                 //Enables object detection
-                config.semanticMode = Config.SemanticMode.ENABLED
+                //config.semanticMode = Config.SemanticMode.ENABLED
                 //depthBtn = LiveViewbind.tglBtnDepthAPI
 
 
@@ -290,7 +299,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
             }
 
 
-            //On every new frame, it places an anchor, once enough anchors are placed a plane is rendered
+            //Gathers frame data and once a plane is detected, places the first anchor
             onSessionUpdated = { _, frame ->
                 if (anchorNode == null) {
                     //Gets the currently tracked planes if there are no anchor nodes
@@ -304,6 +313,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                         ?.let { plane ->
                             Log.d("model","frame Helmet in: "+plane)
                             addAnchorNode(plane.createAnchor(plane.centerPose))
+
                         }
                     //Log.d("model", "frame Helmet: "+frame?.getUpdatedPlanes()?.firstOrNull { it.type == Plane.Type.HORIZONTAL_UPWARD_FACING })
 
@@ -331,7 +341,16 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
             Log.d("depth", "Cant init renderer: "+ e)
         }
 
+
+
+
+
+
+
     }
+
+
+
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -340,15 +359,27 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
         //Screen touch listener
 
+
+
             //Log.d("touch","Ran loop")
             sceneViewPort.setOnTouchListener { _, event ->
 
-                //Makes sure we dont get the helmet when placing cat items
-                if(selectedItems.isEmpty()){
-                    Log.d("touch","Placed Helmet")
-                    sceneViewPort.setOnTouchListener(null)
-                    handleTouchEvent(event)
+              // Toast.makeText(this, "Touch occured", Toast.LENGTH_SHORT).show()
+
+                when (event.action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        // Handle object selection if a touch event occurs
+                        handleObjectSelection(event)
+                        true
+                    }
+
                 }
+                //Makes sure we dont get the helmet when placing cat items
+//                if(selectedItems.isEmpty()){
+//                    Log.d("touch","Placed Helmet")
+//                    sceneViewPort.setOnTouchListener(null)
+//                    handleTouchEvent(event)
+//                }
 
                 //Only newly selected items will be here
                 //And they will trigger the onTouch
@@ -363,6 +394,43 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
 
     }
+    private fun handleObjectSelection(event: MotionEvent) {
+        // Perform ray casting to check for intersections with objects
+        val hitResult = sceneViewPort.frame?.hitTest(event)
+
+       
+        if (hitResult != null && !hitResult.isEmpty()) {
+            // Retrieve the selected object from hitResult
+            val hitPos = hitResult.get(0).hitPose
+            //Toast.makeText(this, "Hit object at: "+hitPos, Toast.LENGTH_SHORT).show()
+
+            val tolerance = 0.6f // Adjust as needed
+
+
+            for ((_, anchorPosition) in anchorsWithNodes) {
+
+                val dx = hitPos.tx() - anchorPosition.x
+                val dy = hitPos.ty() - anchorPosition.y
+                val dz = hitPos.tz() - anchorPosition.z
+
+
+                val squaredDistance = kotlin.math.sqrt(dx * dx + dy * dy + dz * dz)
+
+
+                if (squaredDistance < tolerance * tolerance) {
+
+                    Toast.makeText(this, "Hit anchor", Toast.LENGTH_SHORT).show()
+
+
+                    return
+                }else{
+                    Toast.makeText(this, "No anchor hit", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+        }
+    }
+
 
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -375,6 +443,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
         return super.onOptionsItemSelected(item)
     }
 
+    
     private fun spawnCatItem(event : MotionEvent){
 
         if (event.action == MotionEvent.ACTION_DOWN) {
@@ -405,7 +474,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
         }
     }
 
-    //Measure distance
+    //Place anchor depending where the user clicks
     private fun handleTouchEvent(event: MotionEvent) {
         if (event.action == MotionEvent.ACTION_DOWN && anchorCount < 4) {
             try {
@@ -434,7 +503,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
     }
 
 
-    private var anchorsWithNodes = mutableListOf<Pair<AnchorNode, Position>>()
+
     //Adding a new anchor based on a anchor position
     fun addAnchorNode(anchor: Anchor, item: CatalogItems? = null) {
         Toast.makeText(this, "Anchor", Toast.LENGTH_SHORT).show()
@@ -449,6 +518,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
             AnchorNode(sceneViewPort.engine, anchor)
                 .apply {
                     isEditable = true
+                    isTouchable = true
                     //A type of multi-threading but instead uses a coroutine to start a new task
                     //Without stopping or occupying the main application thread
                     //The way I see it, imagine its a fragment of a Activity, both the fragment
@@ -457,7 +527,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                     lifecycleScope.launch {
                         //Raises the loading flag
                         isLoading = true
-                        //Loads in the placeholder helmet model
+
 
                         //If there isnt an item, put down place holder helmet
                         if(item == null){
@@ -502,6 +572,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
                                     ).apply {
                                         isEditable = true
+                                        isTouchable = true
                                     }
                                 )
                             }
@@ -521,7 +592,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
         anchorCount = anchorsWithNodes.size
 
 // Update instructions or perform any other actions when the limit is reached
-        if (anchorCount >= 4) {
+        if (anchorCount >= 2) {
             instructionText.text = getString(R.string.max_anchors_reached)
 
             // Calculate and display the distance between the two anchors
