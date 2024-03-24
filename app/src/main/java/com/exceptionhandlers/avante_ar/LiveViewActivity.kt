@@ -47,7 +47,8 @@ import io.github.sceneview.node.ModelNode
 
 import kotlinx.coroutines.launch
 import java.io.IOException
-
+import java.lang.StrictMath.sqrt
+import kotlin.math.acos
 
 
 /*
@@ -404,28 +405,40 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
             val hitPos = hitResult.get(0).hitPose
             //Toast.makeText(this, "Hit object at: "+hitPos, Toast.LENGTH_SHORT).show()
 
-            val tolerance = 0.6f // Adjust as needed
+            val dtolerance: Double = 0.6 // Adjust as needed
+            val atolerance: Double = 0.0872665 //angular tolerance
 
+            val cx: Double = sceneViewPort.cameraNode.pose!!.tx().toDouble()
+            val cy: Double = sceneViewPort.cameraNode.pose!!.ty().toDouble()
+            val cz: Double = sceneViewPort.cameraNode.pose!!.tz().toDouble()
 
             for ((_, anchorPosition) in anchorsWithNodes) {
 
-                val dx = hitPos.tx() - anchorPosition.x
-                val dy = hitPos.ty() - anchorPosition.y
-                val dz = hitPos.tz() - anchorPosition.z
+                val ddx: Double = (hitPos.tx()).toDouble() - anchorPosition.x
+                val ddy: Double = (hitPos.ty()).toDouble() - anchorPosition.y
+                val ddz: Double = (hitPos.tz()).toDouble() - anchorPosition.z
 
+                val hdx: Double = (hitPos.tx()).toDouble() - cx
+                val hdy: Double = (hitPos.ty()).toDouble() - cy
+                val hdz: Double = (hitPos.tz()).toDouble() - cz
 
-                val squaredDistance = kotlin.math.sqrt(dx * dx + dy * dy + dz * dz)
+                val adx: Double = anchorPosition.x - cx
+                val ady: Double = anchorPosition.y - cy
+                val adz: Double = anchorPosition.z - cz
 
+                val asq: Double = hdx*hdx+hdy*hdy+hdz*hdz
+                val bsq: Double = adx*adx+ady*ady+adz*adz
+                val csq: Double = ddx*ddx+ddy*ddy+ddz*ddz
 
-                if (squaredDistance < tolerance * tolerance) {
+                val costerm = asq+bsq-csq //cosine law: c^2 = a^2+b^2-2abcosC, where C is the angle opposite to side length c
+                val C = acos(costerm/(2*sqrt(asq)*sqrt(bsq)))
 
+                if(C < atolerance || csq < dtolerance*dtolerance) {
                     Toast.makeText(this, "Hit anchor", Toast.LENGTH_SHORT).show()
-
-
-                    return
-                }else{
+                } else {
                     Toast.makeText(this, "No anchor hit", Toast.LENGTH_SHORT).show()
                 }
+
             }
 
         }

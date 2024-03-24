@@ -300,4 +300,5 @@ internal class Chunk(sl: Double, og: Triple<Double, Double, Double>, res: Double
 
 class ConfidenceTree {
     private var meterChunks = HashMap<Triple<Int, Int, Int>, Chunk>() //chunks in this outer layer are a meter cube
+
 }
