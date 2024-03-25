@@ -23,6 +23,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.add
 import androidx.fragment.app.commit
+import androidx.lifecycle.eventFlow
 import androidx.lifecycle.lifecycleScope
 import com.exceptionhandlers.avante_ar.depth.AABB
 import com.exceptionhandlers.avante_ar.depth.BoxRenderer
@@ -138,6 +139,8 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_live_view)
+
+        //sceneViewPort.lifecycle.currentState
 
 
 
@@ -298,6 +301,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
 
             }
+
 
 
             //Gathers frame data and once a plane is detected, places the first anchor
@@ -597,7 +601,10 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                     }
                     //Finally, sets the AnchorNode to the current new Anchor
                     anchorNode = this
+
                 }
+
+
         )
         val position = Position(anchor.pose.tx(), anchor.pose.ty(), anchor.pose.tz())
         val anchorNodePair = Pair(anchorNode, position)

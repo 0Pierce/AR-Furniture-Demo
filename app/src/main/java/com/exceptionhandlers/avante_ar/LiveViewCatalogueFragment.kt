@@ -65,9 +65,7 @@ class LiveViewCatalogueFragment : Fragment(R.layout.fragment_live_view_catalogue
 
 
 
-    fun coool(){
 
-    }
 
     fun menu(view: View) {
         var itemsList = listOf(
