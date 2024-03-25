@@ -1,3 +1,5 @@
+package com.exceptionhandlers.avante_ar.testing_range
+
 import java.lang.Double.max
 import java.lang.Double.min
 import java.util.PriorityQueue
@@ -7,7 +9,7 @@ import kotlin.math.abs
 //was originally going for a kd-tree, but the oct-tree would probably be less confusing to use
 //the largest unit will be 1m blocks
 
-internal class Point(x1: Double, y1: Double, z1: Double, c: Double = 0.0) : Comparable<Point> { //we can create dummy points for calculation simply by ignoring confidence
+class Point(x1: Double, y1: Double, z1: Double, c: Double = 0.0) : Comparable<Point> { //we can create dummy points for calculation simply by ignoring confidence
     private var x : Double = x1
     private var y : Double = y1
     private var z : Double = z1
@@ -63,7 +65,20 @@ internal class Chunk(sl: Double, og: Triple<Double, Double, Double>, res: Double
     private var resolution : Double = res //if we compare 2 points, how close is close enough?
     private var confres : Double = cres //if we compare 2 points by confidence, how close is close enough?
     fun size(): Int = size
+    private fun inside(p: Point): Boolean {
+        return p.getCoords().first in origin.first..(origin.first+sideLength) && p.getCoords().second in origin.second..(origin.second+sideLength) && p.getCoords().third in origin.third..(origin.third+sideLength)
+    }
+    fun intersect(p1: Point, p2: Point): Boolean { //does this bbox intersect with the other bbox?
+        val Mx = max(p1.getCoords().first, p2.getCoords().first)
+        val mx = min(p2.getCoords().first, p2.getCoords().first)
+        val My = max(p1.getCoords().second, p2.getCoords().second)
+        val my = min(p2.getCoords().second, p2.getCoords().second)
+        val Mz = max(p1.getCoords().third, p2.getCoords().third)
+        val mz = min(p2.getCoords().third, p2.getCoords().third)
+        return !((Mx < origin.first || mx > origin.first+sideLength) && (My < origin.second || my > origin.second+sideLength) && (Mz < origin.third || mz > origin.third+sideLength))
+    }
     fun insert(p: Point) {
+        if(!inside(p)) return
         size++
         nc_updated = false
         cd_updated = false
@@ -73,14 +88,14 @@ internal class Chunk(sl: Double, og: Triple<Double, Double, Double>, res: Double
         } else if(size > max_allowed) { //just add to the child octant nodes, they were already initialized
             //get which octant the point is in
             val pc = p.getCoords()
-            val xc = ((pc.first-origin.first)*2/sideLength).toInt()
-            val yc = ((pc.first-origin.first)*2/sideLength).toInt()
-            val zc = ((pc.second-origin.second)*2/sideLength).toInt()
+            val xc = maxOf(minOf(((pc.first-origin.first)*2/sideLength).toInt(), 1), 0)
+            val yc = maxOf(minOf(((pc.second-origin.second)*2/sideLength).toInt(), 1), 0)
+            val zc = maxOf(minOf(((pc.third-origin.third)*2/sideLength).toInt(), 1), 0)
             //add
             octants[xc][yc][zc]!!.insert(p)
         }
     }
-    fun cull(n: Int) { //cull a certain number
+    private fun cull(n: Int) { //cull a certain number
         nc_updated = false
         cd_updated = false
         val octcull = arrayOf(arrayOf(arrayOf(0, 0), arrayOf(0, 0)), arrayOf(arrayOf(0, 0), arrayOf(0, 0))) //how many should the child nodes cull each?
@@ -89,9 +104,9 @@ internal class Chunk(sl: Double, og: Triple<Double, Double, Double>, res: Double
             size--
             val cpoint = elements.peek()
             val pc = cpoint!!.getCoords() //man wtf are these operators
-            val xc = ((pc.first-origin.first)*2/sideLength).toInt()
-            val yc = ((pc.first-origin.first)*2/sideLength).toInt()
-            val zc = ((pc.second-origin.second)*2/sideLength).toInt()
+            val xc = maxOf(minOf(((pc.first-origin.first)*2/sideLength).toInt(), 1), 0)
+            val yc = maxOf(minOf(((pc.second-origin.second)*2/sideLength).toInt(), 1), 0)
+            val zc = maxOf(minOf(((pc.third-origin.third)*2/sideLength).toInt(), 1), 0)
             octcull[xc][yc][zc]++
             elements.poll()
         }
@@ -115,12 +130,14 @@ internal class Chunk(sl: Double, og: Triple<Double, Double, Double>, res: Double
         }
     }
     fun cullTo(n: Int) { //cull to a target population
+        if(size <= n) return //if the target population is smaller, no need to do anything
         cull(size-n)
     }
     //it is not expected to use delete very often, it's only included in case points were added that were faulty
     //as such this method has a pretty bad time complexity
     //use cull instead for deleting low confidence points
     fun delete(p: Point) { //delete by confidence AND point compare
+        if(!inside(p)) return
         nc_updated = false
         cd_updated = false
         val templist = ArrayList<Point>()
@@ -130,6 +147,7 @@ internal class Chunk(sl: Double, og: Triple<Double, Double, Double>, res: Double
             elements.poll()
             if(p.compareConf(p2, confres) && p.compareCoords(p2, resolution)) {
                 found = true
+                size--
             } else {
                 templist.add(p2)
             }
@@ -139,12 +157,13 @@ internal class Chunk(sl: Double, og: Triple<Double, Double, Double>, res: Double
         }
         if(!found || leaf) return
         val pc = p.getCoords() //man wtf are these operators
-        val xc = ((pc.first-origin.first)*2/sideLength).toInt()
-        val yc = ((pc.first-origin.first)*2/sideLength).toInt()
-        val zc = ((pc.second-origin.second)*2/sideLength).toInt()
+        val xc = maxOf(minOf(((pc.first-origin.first)*2/sideLength).toInt(), 1), 0)
+        val yc = maxOf(minOf(((pc.second-origin.second)*2/sideLength).toInt(), 1), 0)
+        val zc = maxOf(minOf(((pc.third-origin.third)*2/sideLength).toInt(), 1), 0)
         octants[xc][yc][zc]?.delete(p)
     }
     fun deletePC(p: Point) { //delete by point compare only
+        if(!inside(p)) return
         nc_updated = false
         cd_updated = false
         val templist = ArrayList<Point>()
@@ -154,6 +173,7 @@ internal class Chunk(sl: Double, og: Triple<Double, Double, Double>, res: Double
             elements.poll()
             if(p.compareCoords(p2, resolution)) {
                 found = true
+                size--
             } else {
                 templist.add(p2)
             }
@@ -163,9 +183,9 @@ internal class Chunk(sl: Double, og: Triple<Double, Double, Double>, res: Double
         }
         if(!found || leaf) return
         val pc = p.getCoords() //man wtf are these operators
-        val xc = ((pc.first-origin.first)*2/sideLength).toInt()
-        val yc = ((pc.first-origin.first)*2/sideLength).toInt()
-        val zc = ((pc.second-origin.second)*2/sideLength).toInt()
+        val xc = maxOf(minOf(((pc.first-origin.first)*2/sideLength).toInt(), 1), 0)
+        val yc = maxOf(minOf(((pc.second-origin.second)*2/sideLength).toInt(), 1), 0)
+        val zc = maxOf(minOf(((pc.third-origin.third)*2/sideLength).toInt(), 1), 0)
         octants[xc][yc][zc]?.deletePC(p)
     }
     private fun split() { //initializes sub-quadrants, and inserts existing values into them
@@ -184,9 +204,9 @@ internal class Chunk(sl: Double, og: Triple<Double, Double, Double>, res: Double
         for(p in elements) {
             //get which octant the point is in
             val pc = p.getCoords()
-            val xc = ((pc.first-origin.first)*2/sideLength).toInt()
-            val yc = ((pc.first-origin.first)*2/sideLength).toInt()
-            val zc = ((pc.second-origin.second)*2/sideLength).toInt()
+            val xc = maxOf(minOf(((pc.first-origin.first)*2/sideLength).toInt(), 1), 0)
+            val yc = maxOf(minOf(((pc.second-origin.second)*2/sideLength).toInt(), 1), 0)
+            val zc = maxOf(minOf(((pc.third-origin.third)*2/sideLength).toInt(), 1), 0)
             //add
             octants[xc][yc][zc]!!.insert(p)
         }
@@ -194,6 +214,7 @@ internal class Chunk(sl: Double, og: Triple<Double, Double, Double>, res: Double
     //calculate/update self normconfidence/confidencedensity
     //called internally when needed
     private fun selfNC(): Double {
+        if(size == 0) return 0.0
         if(nc_updated) return normConfidence
         nc_updated = true
         if(leaf) {
@@ -259,16 +280,20 @@ internal class Chunk(sl: Double, og: Triple<Double, Double, Double>, res: Double
         return (Mx-mx)*(My-my)*(Mz-mz)
     }
     private fun vncHelper(p1: Point, p2: Point): Pair<Double, Int> { //otensibly to help calculate volume NC, but as it turns out is quite multipurpose!
+        if(size == 0) return Pair(0.0, 0)
         if(covers(p1, p2)) return Pair(selfNC(), elements.size)
         else if(leaf) { //if we are a leaf, we HAVE TO go check each point
+            if(!intersect(p1, p2)) return Pair(0.0, 0) //there is nothing in here that COULD work, as the two bounding boxes don't intersect
             val valid = inArea(p1, p2)
             val sz = valid.size
             var sum = 0.0
             for(i in valid) {
                 sum += i.getConf()
             }
+            if(sz == 0) return Pair(0.0, 0)
             return Pair(sum/(sz*1.0), sz)
         } else { //recursive case, we are not a leaf so we check each child node and do a weighted average
+            if(!intersect(p1, p2)) return Pair(0.0, 0) //there is nothing in here that COULD work, as the two bounding boxes don't intersect
             var sum = 0.0
             var sz = 0
             for(i in 0..1) {
@@ -282,11 +307,12 @@ internal class Chunk(sl: Double, og: Triple<Double, Double, Double>, res: Double
                     }
                 }
             }
+            if(sz == 0) return Pair(0.0, 0)
             return Pair(sum/(sz*1.0), sz)
         }
     }
-    fun volumeNC(p1: Point, p2: Point): Double {
-        return vncHelper(p1, p2).first
+    fun volumeNC(p1: Point, p2: Point): Pair<Double, Int> { //turns out this size will be used in the outside wrapper class
+        return vncHelper(p1, p2)
     }
     fun volumeCD(p1: Point, p2: Point): Double { //important: it calculates with respect to the WHOLE volume, assuming no other points exist
                                                  //when calling within the full confidence tree class, remember to sum everything in range!
@@ -298,7 +324,59 @@ internal class Chunk(sl: Double, og: Triple<Double, Double, Double>, res: Double
     }
 }
 
-class ConfidenceTree {
+class ConfidenceTree(ccull: Int, res: Double, cres: Double, ma: Int) {
     private var meterChunks = HashMap<Triple<Int, Int, Int>, Chunk>() //chunks in this outer layer are a meter cube
-
+    private val multiplier = 1.0 //seems the default units ARE meters!
+    private val cullTarget = ccull
+    private val resolution = res
+    private val confres = cres
+    private val maxAllowed = ma
+    fun insert(p: Point) {
+        val mx = (p.getCoords().first/multiplier).toInt()
+        val my = (p.getCoords().second/multiplier).toInt()
+        val mz = (p.getCoords().third/multiplier).toInt()
+        if(!meterChunks.containsKey(Triple(mx, my, mz))) { //if chunk does not exist, make it
+            meterChunks[Triple(mx, my, mz)] = Chunk(multiplier, Triple(mx*multiplier, my*multiplier, mz*multiplier), resolution, confres, maxAllowed)
+        }
+        meterChunks[Triple(mx, my, mz)]!!.insert(p)
+        meterChunks[Triple(mx, my, mz)]!!.cullTo(cullTarget)
+    }
+    fun delete(p: Point, useconfidence: Boolean = false) { //second warning: very inefficient, use only when needed
+        val mx = (p.getCoords().first/multiplier).toInt()
+        val my = (p.getCoords().second/multiplier).toInt()
+        val mz = (p.getCoords().third/multiplier).toInt()
+        if(!meterChunks.containsKey(Triple(mx, my, mz))) return
+        if(useconfidence) meterChunks[Triple(mx, my, mz)]!!.delete(p)
+        else meterChunks[Triple(mx, my, mz)]!!.deletePC(p)
+    }
+    fun volumeNormConfidence(p1: Point, p2: Point): Double {
+        var sum = 0.0
+        var sz = 0
+        for(k in meterChunks.keys) {
+            if(meterChunks[k]!!.intersect(p1, p2)) {
+                val cres = meterChunks[k]!!.volumeNC(p1, p2)
+                sum += cres.first*(cres.second*1.0)
+                sz += cres.second
+            }
+        }
+        if(sz == 0) return 0.0
+        return sum/(sz*1.0)
+    }
+    fun volumeConfidenceDensity(p1: Point, p2: Point): Double {
+        var sum = 0.0
+        for(k in meterChunks.keys) {
+            if(meterChunks[k]!!.intersect(p1, p2)) {
+                sum += meterChunks[k]!!.volumeCD(p1, p2)
+            }
+        }
+        return sum
+    }
+    fun isEmptySpace(p1: Point, p2: Point): Boolean {
+        for(k in meterChunks.keys) {
+            if(meterChunks[k]!!.intersect(p1, p2)) {
+                if(!meterChunks[k]!!.isEmptyVolume(p1, p2)) return false
+            }
+        }
+        return true
+    }
 }
