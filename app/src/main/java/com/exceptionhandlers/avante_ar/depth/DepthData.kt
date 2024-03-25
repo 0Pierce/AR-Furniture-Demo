@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.exceptionhandlers.avante_ar
+package com.exceptionhandlers.avante_ar.depth
 
 import android.media.Image
 import android.opengl.Matrix

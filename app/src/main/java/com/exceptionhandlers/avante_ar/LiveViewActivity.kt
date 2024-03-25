@@ -24,21 +24,21 @@ import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.add
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
+import com.exceptionhandlers.avante_ar.depth.AABB
+import com.exceptionhandlers.avante_ar.depth.BoxRenderer
+import com.exceptionhandlers.avante_ar.depth.DepthData
+import com.exceptionhandlers.avante_ar.depth.DepthRenderer
+import com.exceptionhandlers.avante_ar.depth.PointClusteringHelper
 import com.google.android.material.navigation.NavigationView
 import com.google.ar.core.Anchor
 import com.google.ar.core.Config
 import com.google.ar.core.Frame
 import com.google.ar.core.Plane
-import com.google.ar.core.Pose
 import com.google.ar.core.TrackingFailureReason
 import com.google.ar.core.TrackingState
 import com.google.ar.core.exceptions.NotYetAvailableException
 import io.github.sceneview.ar.ARSceneView
 import io.github.sceneview.ar.arcore.getUpdatedPlanes
-import io.github.sceneview.ar.arcore.getUpdatedTrackables
-import io.github.sceneview.ar.arcore.xDirection
-import io.github.sceneview.ar.arcore.yDirection
-import io.github.sceneview.ar.arcore.zDirection
 import io.github.sceneview.ar.getDescription
 import io.github.sceneview.ar.node.AnchorNode
 import io.github.sceneview.math.Position
@@ -405,7 +405,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
             val hitPos = hitResult.get(0).hitPose
             //Toast.makeText(this, "Hit object at: "+hitPos, Toast.LENGTH_SHORT).show()
 
-            val dtolerance: Double = 0.6 // Adjust as needed
+            val dtolerance: Double = 0.2 // Adjust as needed
             val atolerance: Double = 0.0872665 //angular tolerance
 
             val cx: Double = sceneViewPort.cameraNode.pose!!.tx().toDouble()
@@ -435,6 +435,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
                 if(C < atolerance || csq < dtolerance*dtolerance) {
                     Toast.makeText(this, "Hit anchor", Toast.LENGTH_SHORT).show()
+                    return
                 } else {
                     Toast.makeText(this, "No anchor hit", Toast.LENGTH_SHORT).show()
                 }
