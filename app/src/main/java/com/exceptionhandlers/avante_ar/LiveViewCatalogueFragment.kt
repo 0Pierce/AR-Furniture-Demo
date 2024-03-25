@@ -7,9 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
-import com.exceptionhandlers.avante_ar.LiveViewActivity
-
-
 
 
 interface OnCatalogItemSelectedListener {
@@ -28,7 +25,7 @@ data class CatalogItems(
 )
 
 
-class LiveViewCatalogue : Fragment(R.layout.fragment_live_view_catalogue) {
+class LiveViewCatalogueFragment : Fragment(R.layout.fragment_live_view_catalogue) {
     private val selectedItem: SelectedItem = SelectedItem("random", "random")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

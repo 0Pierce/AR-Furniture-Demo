@@ -1,4 +1,4 @@
-package com.exceptionhandlers.avante_ar
+package com.exceptionhandlers.avante_ar.legacy
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -12,7 +12,7 @@ import android.widget.ToggleButton
 import androidx.core.view.isGone
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.exceptionhandlers.avante_ar.databinding.ActivityLiveViewBinding
+import com.exceptionhandlers.avante_ar.R
 import com.exceptionhandlers.avante_ar.databinding.FragmentLiveViewBinding
 import com.exceptionhandlers.avante_ar.databinding.FragmentLiveViewCatalogueBinding
 import com.google.ar.core.Anchor

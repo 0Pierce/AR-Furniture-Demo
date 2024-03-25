@@ -166,7 +166,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                         supportFragmentManager.commit{
                             setReorderingAllowed(true)
                             //val fragment = LiveViewCatalogue()
-                            add<LiveViewCatalogue>(R.id.catalogueFragment)
+                            add<LiveViewCatalogueFragment>(R.id.catalogueFragment)
                         }
                     drawerMenuLayout.closeDrawer(GravityCompat.START)
 
@@ -221,7 +221,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
             supportFragmentManager.commit{
                 setReorderingAllowed(true)
                 //val fragment = LiveViewCatalogue()
-                add<LiveViewCatalogue>(R.id.catalogueFragment)
+                add<LiveViewCatalogueFragment>(R.id.catalogueFragment)
 
             }
         }
