@@ -4,6 +4,8 @@ package com.exceptionhandlers.avante_ar.depth
 import android.content.Context
 import android.opengl.GLES20
 import android.opengl.Matrix
+import android.util.Log
+import android.widget.Toast
 import com.google.ar.core.Camera
 import java.io.IOException
 import java.nio.FloatBuffer
@@ -19,6 +21,7 @@ class DepthRenderer {
     private val BYTES_PER_POINT = BYTES_PER_FLOAT * DepthData.FLOATS_PER_POINT
     private val INITIAL_BUFFER_POINTS = 1000
 
+
     private var arrayBuffer = 0
     private var arrayBufferSize = 0
 
@@ -27,12 +30,16 @@ class DepthRenderer {
     private var modelViewProjectionUniform = 0
     private var pointSizeUniform = 0
 
+
+
     private var numPoints = 0
 
     fun DepthRenderer() {}
 
     @Throws(IOException::class)
     fun createOnGlThread(context: Context?) {
+        Log.d("depthDraw", "createdGLThread")
+
         ShaderUtil.checkGLError(TAG, "Bind")
         val buffers = IntArray(1)
         GLES20.glGenBuffers(1, buffers, 0)
@@ -65,27 +72,53 @@ class DepthRenderer {
      * cloud will be ignored.
      */
     fun update(points: FloatBuffer?) {
+        Log.d("depthDraw", "Renderer: update func")
+
         ShaderUtil.checkGLError(TAG, "Update")
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, arrayBuffer)
-
+        Log.d("depthDraw", "Renderer: GLES20 bind buffer")
         // If the array buffer is not large enough to fit the new point cloud, resize it.
         if (points != null) {
             points.rewind()
         }
+        Log.d("depthDraw", "Renderer: 1")
+
         if (points != null) {
             numPoints = points.remaining() / DepthData.FLOATS_PER_POINT
         }
+        Log.d("depthDraw", "Renderer: 2")
+
         if (numPoints * BYTES_PER_POINT > arrayBufferSize) {
-            while (numPoints * BYTES_PER_POINT > arrayBufferSize) {
-                arrayBufferSize *= 2
+            Log.d("depthDraw", "Renderer: If numPoints * BYTES")
+            numPoints = points!!.remaining() / DepthData.FLOATS_PER_POINT
+            if (numPoints * BYTES_PER_POINT > arrayBufferSize) {
+                while (numPoints * BYTES_PER_POINT > arrayBufferSize) {
+                    arrayBufferSize *= 2
+//                    Log.d("depthDraw", "while")
+//                    Log.d("depthDraw", "Nums: "+ numPoints +" | "+BYTES_PER_POINT +" | "+arrayBuffer)
+
+
+                }
+                GLES20.glBufferData(
+                    GLES20.GL_ARRAY_BUFFER,
+                    arrayBufferSize,
+                    null,
+                    GLES20.GL_DYNAMIC_DRAW
+                )
             }
-            GLES20.glBufferData(
-                GLES20.GL_ARRAY_BUFFER,
-                arrayBufferSize,
-                null,
-                GLES20.GL_DYNAMIC_DRAW
-            )
+            Log.d("depthDraw", "Renderer: Above BufferData")
+
+//            GLES20.glBufferData(
+//                GLES20.GL_ARRAY_BUFFER,
+//                arrayBufferSize,
+//                null,
+//                GLES20.GL_DYNAMIC_DRAW
+//            )
+            Log.d("depthDraw", "Renderer: GLES BufferData, above 3, below if")
+
         }
+        Log.d("depthDraw", "Renderer: 3")
+
         GLES20.glBufferSubData(
             GLES20.GL_ARRAY_BUFFER, 0, numPoints * BYTES_PER_POINT, points
         )
@@ -95,6 +128,7 @@ class DepthRenderer {
 
     /** Render the point cloud. The ARCore point cloud is given in world space.  */
     fun draw(camera: Camera) {
+        Log.d("depthDraw", "Renderer: draw func")
         val projectionMatrix = FloatArray(16)
         camera.getProjectionMatrix(projectionMatrix, 0, 0.1f, 100.0f)
         val viewMatrix = FloatArray(16)
@@ -120,6 +154,7 @@ class DepthRenderer {
         GLES20.glDisableVertexAttribArray(positionAttribute)
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0)
         ShaderUtil.checkGLError(TAG, "Draw complete")
+        Log.d("depthDraw", "Finished draw")
     }
 
 }

@@ -39,8 +39,11 @@ object DepthData {
     const val FLOATS_PER_POINT = 4 // X,Y,Z,confidence.
     fun create(frame: Frame, cameraPoseAnchor: Anchor): FloatBuffer? {
         try {
+            Log.d("DepthData","1: Try")
             val depthImage = frame.acquireRawDepthImage16Bits()
             val confidenceImage = frame.acquireRawDepthConfidenceImage()
+            Log.d("DepthData","2: Depth & Confi image")
+
 
             // To transform 2D depth pixels into 3D points we retrieve the intrinsic camera parameters
             // corresponding to the depth image. See more information about the depth values at
@@ -51,9 +54,13 @@ object DepthData {
             val points = convertRawDepthImagesTo3dPointBuffer(
                 depthImage, confidenceImage, intrinsics, modelMatrix
             )
+            Log.d("DepthData","3: After val points converting")
+
             Log.d("depth", "DepthImage: "+depthImage.width)
             depthImage.close()
             confidenceImage.close()
+            Log.d("DepthData","4: Finished")
+
             return points
         } catch (e: NotYetAvailableException) {
             // This normally means that depth data is not available yet. This is normal so we will not

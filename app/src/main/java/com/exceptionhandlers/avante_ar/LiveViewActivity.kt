@@ -108,6 +108,8 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
     private var selectedAnchors = mutableListOf<Pair<ModelNode,AnchorNode>>()
     private lateinit var materialLoader : MaterialLoader
 
+    private var depthBtnFlag : Boolean = false
+
 
     //Used as a flag and displaying loading icon (Not showing rn)
     var isLoading = false
@@ -155,7 +157,6 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
         //sceneViewPort.lifecycle.currentState
 
-
         val engine = Engine.create()
         findViewById<ComposeView>(R.id.my_composable).setContent {
             MaterialLoaderComposable(engine)
@@ -199,15 +200,20 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                         var frameG = sceneViewPort.session?.frame
                         var sessionFR = sceneViewPort.session
 
-                        val camera = frameG!!.getCamera()
+                        val camera = frameG!!.camera
                         sessionFR?.let { it ->
                             DepthData.create(
                                 frameG,
-                                it.createAnchor(camera.getPose())
+                                it.createAnchor(camera.pose)
                             )
+
+
+
+
                         }
+                    depthBtnFlag = true
                     drawerMenuLayout.closeDrawer(GravityCompat.START)
-                    //onDrawFrame(sessionFR)
+                    //onDrawFrame()
 
                 }
                 //Remove all button
@@ -231,9 +237,10 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                         val pos1 = selectedAnchors.first().first.position
                         val pos2 = selectedAnchors.first().second.position
                         Toast.makeText(this, "Distance: "+calculateDistance(pos1, pos2), Toast.LENGTH_SHORT).show()
-
+                        drawerMenuLayout.closeDrawer(GravityCompat.START)
                     }else{
                         Toast.makeText(this, "Select 2 anchors, selected: "+ selectedAnchors.size+" anchors", Toast.LENGTH_SHORT).show()
+                        drawerMenuLayout.closeDrawer(GravityCompat.START)
                     }
                 }
 
@@ -335,6 +342,8 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
             //Gathers frame data and once a plane is detected, places the first anchor
             onSessionUpdated = { _, frame ->
+
+
                 if (anchorNode == null) {
                     //Gets the currently tracked planes if there are no anchor nodes
                     Log.d("model", "frame Helmet: "+frame)
@@ -353,7 +362,11 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
 
                 }
-                //onDrawFrame()
+                if(depthBtnFlag == true){
+                    Log.d("onDraw","Updated onDrawFrame")
+                    onDrawFrame()
+                }
+
             }
             //Self explanatory
             onTrackingFailureChanged = { reason ->
@@ -362,12 +375,14 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
 
         }
+        Log.d("depthDraw","OnCreate: "+sceneViewPort.lifecycle?.currentState)
+
 
 
         try {
             // Create the texture and pass it to ARCore session to be filled during update().
 
-            //depthRenderer.createOnGlThread( /*context=*/this)
+            depthRenderer.createOnGlThread( /*context=*/this)
             boxRenderer.createOnGlThread( /*context=*/this)
 
         } catch (e: IOException) {
@@ -737,7 +752,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
             // camera framerate.
 
             var frame: Frame? = sceneViewPort.session?.update()
-            Log.d("depth", "1: "+frame?.camera?.getTrackingFailureReason().toString())
+            Log.d("depthDraw", "1: "+frame?.camera?.getTrackingFailureReason().toString())
 
             var camera = frame?.getCamera()
 
@@ -745,47 +760,68 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
 
             // Retrieve the depth data for this frame.
-            Log.d("depth", "2: "+frame?.camera?.getTrackingFailureReason().toString())
-            Log.d("depth", camera!!.getPose().toString())
+            Log.d("depthDraw", "2: "+frame?.camera?.getTrackingFailureReason().toString())
+            Log.d("depthDraw", camera!!.getPose().toString())
             // Retrieve the depth data for this frame.
+
+            if(frame == null){
+                Log.d("depthDraw", "Frame null")
+
+            }else{
+                Log.d("depthDraw", "frame NOT null")
+
+            }
+
+            if(camera == null){
+                Log.d("depthDraw", "camera null")
+
+            }else{
+                Log.d("depthDraw", "camera NOT null")
+
+            }
             var points = sceneViewPort.session?.let { session ->
                 frame?.let { frame ->
                     camera?.let { camera ->
+                        Log.d("depthDraw", "Inside val points: session; "+ session)
+                        Log.d("depthDraw", "Inside val points: cam pose; "+ camera.getPose())
+
                         DepthData.create(frame, session.createAnchor(camera.getPose()))
                     }
                 }
             }
 
 
-            Log.d("depth", "Points: "+points.toString())
+            Log.d("depthDraw", "Points: "+points.toString())
 
             if (points == null) {
                 return
             }
 
-            Log.d("depth", "3: "+frame?.camera?.getTrackingFailureReason().toString())
+            Log.d("depthDraw", "3: "+frame?.camera?.getTrackingFailureReason().toString())
 
             // Filters the depth data.
             if (sceneViewPort.session != null) {
                 DepthData.filterUsingPlanes(points, sceneViewPort.session!!.getAllTrackables(Plane::class.java))
             }
-            Log.d("depth", "4: "+frame?.camera?.getTrackingFailureReason().toString())
+            Log.d("depthDraw", "4: "+frame?.camera?.getTrackingFailureReason().toString())
 
             // Visualize depth points.
             depthRenderer.update(points)
+            Log.d("depthDraw", "5: "+frame?.camera?.getTrackingFailureReason().toString())
             if (camera != null) {
+
                 Toast.makeText(this, "Drew camera", Toast.LENGTH_SHORT).show()
                 depthRenderer.draw(camera)
             }
 
-
+            Log.d("depthDraw", "6: "+frame?.camera?.getTrackingFailureReason().toString())
             // Draw boxes around clusters of points.
             val clusteringHelper = PointClusteringHelper(points)
             val clusters: List<AABB> = clusteringHelper.findClusters()
             for (aabb in clusters) {
                 boxRenderer.draw(aabb, camera)
             }
-            Log.d("depth", frame?.camera?.getTrackingFailureReason().toString())
+            Log.d("depthDraw", frame?.camera?.getTrackingFailureReason().toString())
 
         }else{
             Toast.makeText(this, "Not tracking", Toast.LENGTH_SHORT).show()
