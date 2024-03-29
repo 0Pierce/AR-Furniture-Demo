@@ -225,6 +225,17 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                     drawerMenuLayout.closeDrawer(GravityCompat.START)
                 }
 
+                R.id.btnFour ->{
+                    if(selectedAnchors.size == 2 ){
+                        val pos1 = selectedAnchors.first().first.position
+                        val pos2 = selectedAnchors.first().second.position
+                        Toast.makeText(this, "Distance: "+calculateDistance(pos1, pos2), Toast.LENGTH_SHORT).show()
+
+                    }else{
+                        Toast.makeText(this, "Select 2 anchors", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
 
             }
             true
@@ -373,6 +384,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
 
 
+    //Helps render the cube around 3d Models
     @Composable
     fun MaterialLoaderComposable(engine: Engine) {
         materialLoader = rememberMaterialLoader(engine)
@@ -400,12 +412,6 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                     }
 
                 }
-                //Makes sure we dont get the helmet when placing cat items
-//                if(selectedItems.isEmpty()){
-//                    Log.d("touch","Placed Helmet")
-//                    sceneViewPort.setOnTouchListener(null)
-//                    handleTouchEvent(event)
-//                }
 
                 //Only newly selected items will be here
                 //And they will trigger the onTouch
@@ -677,7 +683,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
         anchorCount = anchorsWithNodes.size
 
 // Update instructions or perform any other actions when the limit is reached
-        if (anchorCount >= 2) {
+        if (anchorCount >= 3) {
             instructionText.text = getString(R.string.max_anchors_reached)
 
             // Calculate and display the distance between the two anchors

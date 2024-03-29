@@ -10,4 +10,7 @@
     <item android:id="@+id/btnThree"
         android:title="@string/btnRemoveAll" />
 
+    <item android:id="@+id/btnFour"
+        android:title="@string/btnMeasure" />
+
 </menu>
