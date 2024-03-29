@@ -39,6 +39,7 @@ class LoginActivity : AppCompatActivity() {
             if(email.isNotEmpty() && pass.isNotEmpty()){
 
 
+
                 firebaseAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener{
                     startActivity(Intent(this, HomePageActivity::class.java))
 

@@ -13,6 +13,8 @@ import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import androidx.cardview.widget.CardView
+import com.google.firebase.auth.FirebaseAuth
+import kotlin.system.exitProcess
 
 /*
 *Name: HomePageActivity
@@ -35,9 +37,27 @@ import androidx.cardview.widget.CardView
 * */
 
 class HomePageActivity : AppCompatActivity() {
+
+    lateinit var firebaseAuth : FirebaseAuth
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home_page)
+
+        firebaseAuth = FirebaseAuth.getInstance()
+
+
+        val btnClose = findViewById<Button>(R.id.btnClose).setOnClickListener{
+            firebaseAuth.signOut()
+            moveTaskToBack(true);
+            exitProcess(-1)
+        }
+
+        val btnSignOut = findViewById<Button>(R.id.btnSignOut).setOnClickListener{
+            firebaseAuth.signOut()
+            startActivity(Intent(this, LoginActivity::class.java))
+
+        }
 
         val card1 = findViewById<CardView>(R.id.homeCard1)
         val card2 = findViewById<CardView>(R.id.homeCard2)
