@@ -221,6 +221,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                         }
                         Toast.makeText(applicationContext, "Removed all models", Toast.LENGTH_SHORT).show()
                         anchorsWithNodes.clear()
+                        selectedAnchors.clear()
                     }
                     drawerMenuLayout.closeDrawer(GravityCompat.START)
                 }
@@ -232,7 +233,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                         Toast.makeText(this, "Distance: "+calculateDistance(pos1, pos2), Toast.LENGTH_SHORT).show()
 
                     }else{
-                        Toast.makeText(this, "Select 2 anchors", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Select 2 anchors, selected: "+ selectedAnchors.size+" anchors", Toast.LENGTH_SHORT).show()
                     }
                 }
 
@@ -398,7 +399,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
         //Screen touch listener
 
 
-
+            //Unneeded?
             //Log.d("touch","Ran loop")
             sceneViewPort.setOnTouchListener { _, event ->
 
@@ -407,7 +408,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                 when (event.action) {
                     MotionEvent.ACTION_DOWN -> {
                         // Handle object selection if a touch event occurs
-                        handleObjectSelection(event)
+                        //handleObjectSelection(event)
                         true
                     }
 
@@ -426,6 +427,8 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
 
     }
+
+    //Unneeded?
     private fun handleObjectSelection(event: MotionEvent) {
         // Perform ray casting to check for intersections with objects
         val hitResult = sceneViewPort.frame?.hitTest(event)
@@ -630,7 +633,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                                     engine,
                                     size = modelNode.extents,
                                     center = modelNode.center,
-                                    materialInstance = materialLoader.createColorInstance(Color.White.copy(alpha = 0.5f))
+                                    materialInstance = materialLoader.createColorInstance(Color.Green.copy(alpha = 0.2f))
                                 ).apply {
                                     isVisible = false
                                 }
@@ -648,7 +651,9 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                                             true
 
                                         }else{
+                                            val anchorNodePair = Pair(modelNode, anchorNode)
                                             boundingBoxNode.isVisible = false
+                                            selectedAnchors.remove(anchorNodePair)
                                             true
                                         }
 
@@ -683,12 +688,12 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
         anchorCount = anchorsWithNodes.size
 
 // Update instructions or perform any other actions when the limit is reached
-        if (anchorCount >= 3) {
+        if (anchorCount >= 4) {
             instructionText.text = getString(R.string.max_anchors_reached)
 
             // Calculate and display the distance between the two anchors
-            val distance = calculateDistance(anchorsWithNodes[0].second, anchorsWithNodes[1].second)
-            Toast.makeText(this, "Distance: $distance meters", Toast.LENGTH_SHORT).show()
+//            val distance = calculateDistance(anchorsWithNodes[0].second, anchorsWithNodes[1].second)
+//            Toast.makeText(this, "Distance: $distance meters", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -797,11 +802,15 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
 
 
+
+    //Unneeded?
     // Method to select an item
     private fun selectItem(anchorNode: AnchorNode) {
         selectedAnchorNode = anchorNode
         // TO-DO: Can be used for other stuff but right now just for anchor deletion
     }
+
+    //Unneeded?
     private fun deleteSelectedItem() {
         selectedAnchorNode?.let { anchorNode ->
             // Remove the anchor node from the scene
@@ -814,6 +823,8 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
     }
 
 
+
+    //Unneeded?
     // Method to handle long-click event
     fun onItemLongClick(event: MotionEvent) {
         // Iterate through all anchors to check if the long-click is near any anchor
