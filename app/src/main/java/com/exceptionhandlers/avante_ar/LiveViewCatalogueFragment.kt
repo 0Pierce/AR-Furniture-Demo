@@ -70,7 +70,9 @@ class LiveViewCatalogueFragment : Fragment(R.layout.fragment_live_view_catalogue
     fun menu(view: View) {
         var itemsList = listOf(
             CatalogItems(name = "shelf", imgPath = "models/book_shelf.glb"),
-            CatalogItems(name = "sofa", imgPath = "models/sofa_single.glb")
+            CatalogItems(name = "sofa", imgPath = "models/sofa_single.glb"),
+            CatalogItems(name = "statue", imgPath = "models/GLman.glb")
+
         )
         val size = itemsList.size
         for (furniture in itemsList) {
@@ -79,7 +81,7 @@ class LiveViewCatalogueFragment : Fragment(R.layout.fragment_live_view_catalogue
             val button = view.findViewById<LinearLayout>(buttonId)
 
             button?.setOnClickListener {
-                if (size <= 2) {
+                if (size <= 3) {
                     updateSelected(furniture)
                     listener?.onCatalogItemSelected(furniture)
                 } else {

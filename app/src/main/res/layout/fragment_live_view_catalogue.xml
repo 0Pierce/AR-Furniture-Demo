@@ -124,6 +124,7 @@
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>
+
         <androidx.cardview.widget.CardView
             android:layout_width="150dp"
             android:layout_height="@dimen/card_view_height"
@@ -131,36 +132,32 @@
             android:layout_rowWeight="1"
             android:layout_column="0"
             android:layout_columnWeight="1"
+            android:layout_margin="12dp"
             app:cardCornerRadius="15dp"
-            app:cardElevation="12dp"
-            android:layout_margin="12dp">
-
-
-
+            app:cardElevation="12dp">
 
 
             <LinearLayout
+                android:id="@+id/statue"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:background="@color/white">
+                android:background="@color/white"
+                android:orientation="vertical">
 
                 <ImageView
                     android:layout_width="80dp"
                     android:layout_height="80dp"
-                    android:src="@drawable/obj_placeholder"
                     android:layout_gravity="center"
-                    />
+                    android:src="@drawable/statue" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
+                    android:text="Statue"
                     android:textColor="@color/black"
-                    android:text="@string/objPlaceholder"
-                    />
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>
