@@ -62,6 +62,11 @@ import java.io.IOException
 import java.lang.StrictMath.sqrt
 import kotlin.math.acos
 
+import com.google.ar.core.Anchor.CloudAnchorState
+import com.google.ar.core.Config.CloudAnchorMode
+import com.google.ar.core.HitResult
+import com.google.ar.core.PointCloud
+
 
 /*
 *Name: LiveViewActivity
@@ -320,6 +325,9 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                     else -> Config.DepthMode.DISABLED
                 }
 
+                val config = Config(session)
+                config.cloudAnchorMode = Config.CloudAnchorMode.ENABLED
+                session.configure(config)
 
                 //UNSURE: but you can guess by going off their names
                 //No instant placements (Guessing objects cannot snap?)
