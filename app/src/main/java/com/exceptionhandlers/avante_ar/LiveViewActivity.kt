@@ -644,7 +644,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                                     }
 
                                 var materialLoader = MaterialLoader(engine, applicationContext)
-                                val boundingBoxNode = CubeNode(
+                                val boundingBoxNodeDouble = CubeNode(
                                     engine,
                                     size = modelNode.extents,
                                     center = modelNode.center,
@@ -652,7 +652,16 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                                 ).apply {
                                     isVisible = false
                                 }
-                                modelNode.addChildNode(boundingBoxNode)
+                                val boundingBoxNodeLong = CubeNode(
+                                    engine,
+                                    size = modelNode.extents,
+                                    center = modelNode.center,
+                                    materialInstance = materialLoader.createColorInstance(Color.Red.copy(alpha = 0.2f))
+                                ).apply {
+                                    isVisible = false
+                                }
+                                modelNode.addChildNode(boundingBoxNodeDouble)
+                                modelNode.addChildNode(boundingBoxNodeLong)
                                 addChildNode(modelNode)
                                 //Goes through all of the nodes and sets a doubleTap listener
                                 listOf(modelNode, anchorNode).forEach {
@@ -660,25 +669,63 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
                                         //Checks if that model already has a box around it
                                         //If no, goes ahead and makes one
-                                        if(boundingBoxNode.isVisible == false){
+                                        if(boundingBoxNodeDouble.isVisible == false){
                                             Toast.makeText(applicationContext, "Double tab", Toast.LENGTH_SHORT).show()
                                             val anchorNodePair = Pair(modelNode, anchorNode)
                                             //Used to calc the distance between selected anchors
                                             //and other stuff in the future
                                             selectedAnchors.add(anchorNodePair)
-                                            boundingBoxNode.isVisible = true
+                                            boundingBoxNodeDouble.isVisible = true
                                             true
 
                                             //If yes, removes the box
                                         }else{
                                             val anchorNodePair = Pair(modelNode, anchorNode)
-                                            boundingBoxNode.isVisible = false
+                                            boundingBoxNodeDouble.isVisible = false
                                             selectedAnchors.remove(anchorNodePair)
                                             true
                                         }
 
 
 
+                                    }
+                                }
+
+
+                                listOf(modelNode,anchorNode).forEach{
+
+                                    //Locks the longPress model in place preventing it from being moved
+                                    //And displays a red box around it
+                                    it.onLongPress ={
+                                        if(boundingBoxNodeLong.isVisible == false){
+                                            Toast.makeText(applicationContext, "Long press", Toast.LENGTH_SHORT).show()
+                                            boundingBoxNodeLong.isVisible = true
+//                                            anchorNode.isEditable = false
+//                                            anchorNode.anchor.apply {
+//                                                isEditable = false
+//                                            }
+
+                                            anchorNode.anchor.apply {
+                                                isEditable = false
+                                                isPositionEditable = false
+                                            }
+
+                                            true
+
+                                            //Removed the long press box around the model
+                                        }else{
+                                            boundingBoxNodeLong.isVisible = false
+//                                            anchorNode.isEditable = true
+//                                            anchorNode.anchor.apply {
+//                                                isEditable = true
+//                                            }
+                                            anchorNode.anchor.apply {
+                                                isEditable = true
+                                                isPositionEditable = true
+                                            }
+                                            true
+
+                                        }
                                     }
                                 }
                             }
