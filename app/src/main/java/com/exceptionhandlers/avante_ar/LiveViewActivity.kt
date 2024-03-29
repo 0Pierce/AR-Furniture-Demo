@@ -633,11 +633,21 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
                                 listOf(modelNode, anchorNode).forEach {
                                     it.onDoubleTap = {
-                                        Toast.makeText(applicationContext, "Double tab", Toast.LENGTH_SHORT).show()
-                                        val anchorNodePair = Pair(modelNode, anchorNode)
-                                        selectedAnchors.add(anchorNodePair)
-                                        boundingBoxNode.isVisible = true
-                                        true
+
+                                        if(boundingBoxNode.isVisible == false){
+                                            Toast.makeText(applicationContext, "Double tab", Toast.LENGTH_SHORT).show()
+                                            val anchorNodePair = Pair(modelNode, anchorNode)
+                                            selectedAnchors.add(anchorNodePair)
+                                            boundingBoxNode.isVisible = true
+                                            true
+
+                                        }else{
+                                            boundingBoxNode.isVisible = false
+                                            true
+                                        }
+
+
+
                                     }
                                 }
                             }
