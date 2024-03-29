@@ -3,4 +3,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="spacePurple">#660094</color>
+    <color name="avanteRed">#cf282a</color>
+    <color name="avanteLightDark">#20252b</color>
+    <color name="avanteDark">#1a1a1a</color>
 </resources>

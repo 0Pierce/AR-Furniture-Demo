@@ -7,6 +7,8 @@ import android.animation.ObjectAnimator
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
@@ -49,7 +51,7 @@ class HomePageActivity : AppCompatActivity() {
 //
 //        }
 
-        card1.setOnClickListener{
+        card1.setOnClickListener {
             val scaleDownX = ObjectAnimator.ofFloat(card1, "scaleX", 0.9f)
             val scaleDownY = ObjectAnimator.ofFloat(card1, "scaleY", 0.9f)
             scaleDownX.duration = 100
@@ -74,11 +76,12 @@ class HomePageActivity : AppCompatActivity() {
                     super.onAnimationEnd(animation)
                     scaleUp.start()
 
+                    // Delay the start of the activity so the anim can play
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        startActivity(Intent(this@HomePageActivity, LiveViewActivity::class.java))
+                    }, 100) // milliseconds
                 }
             })
-
-            startActivity(Intent(this, LiveViewActivity::class.java))
-
         }
         card2.setOnClickListener{
             val scaleDownX = ObjectAnimator.ofFloat(card2, "scaleX", 0.9f)

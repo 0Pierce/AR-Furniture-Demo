@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.exceptionhandlers.avante_ar" />
+                  <option name="mobileSdkAppId" value="1:50372043694:android:490602e4003f3289345e3f" />
+                  <option name="projectId" value="avante-ar" />
+                  <option name="projectNumber" value="50372043694" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

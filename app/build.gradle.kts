@@ -49,6 +49,8 @@ android {
 
 dependencies {
 
+    implementation("androidx.activity:activity:1.8.0")
+    implementation("com.google.firebase:firebase-auth:22.3.1")
     val fragment_version = "1.6.2"
 
     implementation("androidx.core:core-ktx:1.12.0")
