@@ -754,7 +754,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
             var frame: Frame? = sceneViewPort.session?.update()
             Log.d("depthDraw", "1: "+frame?.camera?.getTrackingFailureReason().toString())
 
-            var camera = frame?.getCamera()
+            var camera = frame?.camera
 
             // If frame is ready, render camera preview image to the GL surface.
 

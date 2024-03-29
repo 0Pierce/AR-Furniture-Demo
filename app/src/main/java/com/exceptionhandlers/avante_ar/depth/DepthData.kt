@@ -137,8 +137,8 @@ object DepthData {
                 // Retrieves the confidence value for this pixel.
                 val confidencePixelValue = confidenceBuffer[y * confidenceImagePlane.rowStride
                         + x * confidenceImagePlane.pixelStride]
-                Log.d("depth", confidencePixelValue.toString())
-                Log.d("depth", "Enter")
+//                Log.d("depth", confidencePixelValue.toString())
+//                Log.d("depth", "Enter")
                 val confidenceNormalized =
                     (confidencePixelValue.toInt() and 0xff).toFloat() / 255.0f
                 if (confidenceNormalized < 0.3 || depthMeters > 1.5) {
@@ -162,9 +162,9 @@ object DepthData {
                 points.put(pointWorld[0]) // X.
                 points.put(pointWorld[1]) // Y.
                 points.put(pointWorld[2]) // Z.
-                Log.d("depthXYZ", "X: "+pointWorld[0].toString())
-                Log.d("depthXYZ", "Y: "+pointWorld[1].toString())
-                Log.d("depthXYZ", "Z: "+pointWorld[2].toString())
+//                Log.d("depthXYZ", "X: "+pointWorld[0].toString())
+//                Log.d("depthXYZ", "Y: "+pointWorld[1].toString())
+//                Log.d("depthXYZ", "Z: "+pointWorld[2].toString())
 
 
                 points.put(confidenceNormalized)
@@ -181,7 +181,7 @@ object DepthData {
 
         // Allocates the output buffer.
         val numPoints = points.remaining() / FLOATS_PER_POINT
-        Log.d("depth", "Number of points: "+numPoints.toString())
+//        Log.d("depth", "Number of points: "+numPoints.toString())
         // Each plane is checked against each point.
         for (plane in allPlanes) {
             if (plane.trackingState != TrackingState.TRACKING || plane.getSubsumedBy() != null) {
