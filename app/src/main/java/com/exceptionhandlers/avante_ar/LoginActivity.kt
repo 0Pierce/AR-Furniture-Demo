@@ -29,7 +29,10 @@ class LoginActivity : AppCompatActivity() {
 
         }
 
+        val btnSkip = findViewById<TextView>(R.id.btnSkip).setOnClickListener{
+            startActivity(Intent(this, HomePageActivity::class.java))
 
+        }
 
 
         val btnLogin = findViewById<Button>(R.id.btnLogin).setOnClickListener{
