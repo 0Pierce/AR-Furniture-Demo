@@ -72,6 +72,8 @@ class HomePageActivity : AppCompatActivity() {
 //        }
 
         card1.setOnClickListener {
+
+            //Just a animation
             val scaleDownX = ObjectAnimator.ofFloat(card1, "scaleX", 0.9f)
             val scaleDownY = ObjectAnimator.ofFloat(card1, "scaleY", 0.9f)
             scaleDownX.duration = 100

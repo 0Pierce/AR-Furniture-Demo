@@ -654,17 +654,22 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                                 }
                                 modelNode.addChildNode(boundingBoxNode)
                                 addChildNode(modelNode)
-
+                                //Goes through all of the nodes and sets a doubleTap listener
                                 listOf(modelNode, anchorNode).forEach {
                                     it.onDoubleTap = {
 
+                                        //Checks if that model already has a box around it
+                                        //If no, goes ahead and makes one
                                         if(boundingBoxNode.isVisible == false){
                                             Toast.makeText(applicationContext, "Double tab", Toast.LENGTH_SHORT).show()
                                             val anchorNodePair = Pair(modelNode, anchorNode)
+                                            //Used to calc the distance between selected anchors
+                                            //and other stuff in the future
                                             selectedAnchors.add(anchorNodePair)
                                             boundingBoxNode.isVisible = true
                                             true
 
+                                            //If yes, removes the box
                                         }else{
                                             val anchorNodePair = Pair(modelNode, anchorNode)
                                             boundingBoxNode.isVisible = false
