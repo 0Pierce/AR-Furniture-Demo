@@ -43,6 +43,7 @@ import io.github.sceneview.ar.arcore.getUpdatedPlanes
 import io.github.sceneview.ar.getDescription
 import io.github.sceneview.ar.node.AnchorNode
 import io.github.sceneview.math.Position
+import io.github.sceneview.node.CubeNode
 import io.github.sceneview.node.ModelNode
 
 
@@ -580,8 +581,8 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                                 selectedPath
                                 //UNSURE: Makes the model scalable and adjustable?
                             )?.let { modelInstance ->
-                                addChildNode(
-                                    ModelNode(
+                                    val anchorNode = AnchorNode(engine = engine, anchor = anchor)
+                                    val modelNode = ModelNode(
                                         modelInstance = modelInstance,
                                         // Scale to fit in a 0.5 meters cube
                                         scaleToUnits = 0.5f,
@@ -591,8 +592,20 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                                     ).apply {
                                         isEditable = true
                                         isTouchable = true
+
                                     }
-                                )
+
+
+
+                                addChildNode(modelNode)
+
+                                listOf(modelNode, anchorNode).forEach {
+                                    it.onDoubleTap = {
+                                        Toast.makeText(applicationContext, "Double tab", Toast.LENGTH_SHORT).show()
+
+                                        true
+                                    }
+                                }
                             }
 
                         }
@@ -602,13 +615,20 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                     //Finally, sets the AnchorNode to the current new Anchor
                     anchorNode = this
 
+
+
                 }
+
+
 
 
         )
         val position = Position(anchor.pose.tx(), anchor.pose.ty(), anchor.pose.tz())
         val anchorNodePair = Pair(anchorNode, position)
         anchorsWithNodes.add(anchorNodePair as Pair<AnchorNode, Position>)
+
+
+
 
         anchorCount = anchorsWithNodes.size
 

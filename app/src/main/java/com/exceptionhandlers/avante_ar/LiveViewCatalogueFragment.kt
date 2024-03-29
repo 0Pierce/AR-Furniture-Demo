@@ -64,9 +64,6 @@ class LiveViewCatalogueFragment : Fragment(R.layout.fragment_live_view_catalogue
     }
 
 
-
-
-
     fun menu(view: View) {
         var itemsList = listOf(
             CatalogItems(name = "shelf", imgPath = "models/book_shelf.glb"),
