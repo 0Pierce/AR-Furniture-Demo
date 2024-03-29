@@ -11,6 +11,10 @@
 
 
 
+
+
+
+
     <io.github.sceneview.ar.ARSceneView
         android:id="@+id/sceneViewLive"
         android:layout_width="match_parent"

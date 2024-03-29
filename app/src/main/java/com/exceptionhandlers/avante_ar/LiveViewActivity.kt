@@ -5,6 +5,7 @@ import android.content.Intent
 import android.opengl.GLES20
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
@@ -16,6 +17,8 @@ import android.widget.Toast
 import android.widget.ToggleButton
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.Composable
+import androidx.core.graphics.alpha
 import androidx.core.view.GravityCompat
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
@@ -42,9 +45,16 @@ import io.github.sceneview.ar.ARSceneView
 import io.github.sceneview.ar.arcore.getUpdatedPlanes
 import io.github.sceneview.ar.getDescription
 import io.github.sceneview.ar.node.AnchorNode
+import io.github.sceneview.loaders.MaterialLoader
 import io.github.sceneview.math.Position
 import io.github.sceneview.node.CubeNode
 import io.github.sceneview.node.ModelNode
+import io.github.sceneview.rememberMaterialLoader
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.viewinterop.AndroidView
+import com.google.android.filament.Box
+import com.google.android.filament.Engine
 
 
 import kotlinx.coroutines.launch
@@ -95,6 +105,8 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
     private lateinit var btnRemove: Button
     lateinit var navMenuToggle : ActionBarDrawerToggle
     private var anchorsWithNodes = mutableListOf<Pair<AnchorNode, Position>>()
+    private var selectedAnchors = mutableListOf<Pair<ModelNode,AnchorNode>>()
+    private lateinit var materialLoader : MaterialLoader
 
 
     //Used as a flag and displaying loading icon (Not showing rn)
@@ -144,6 +156,10 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
         //sceneViewPort.lifecycle.currentState
 
 
+        val engine = Engine.create()
+        findViewById<ComposeView>(R.id.my_composable).setContent {
+            MaterialLoaderComposable(engine)
+        }
 
         //Sets the toggle to open and close the sliding menu
         var drawerMenuLayout = findViewById<DrawerLayout>(R.id.drawerMenuLayout)
@@ -333,7 +349,6 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
             }
 
 
-
         }
 
 
@@ -358,6 +373,11 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
 
 
+    @Composable
+    fun MaterialLoaderComposable(engine: Engine) {
+        materialLoader = rememberMaterialLoader(engine)
+        // Use materialLoader here
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     private fun TouchListener(){
@@ -523,12 +543,16 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
 
 
+
+
     //Adding a new anchor based on a anchor position
+
     fun addAnchorNode(anchor: Anchor, item: CatalogItems? = null) {
         Toast.makeText(this, "Anchor", Toast.LENGTH_SHORT).show()
         if (item != null) {
             Log.d("model","Placing: " +item.name)
         }
+
 
         sceneViewPort.addChildNode(
             //AnchorNode constructor call, passing along the viewPort engine and anchor position
@@ -595,14 +619,24 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 
                                     }
 
-
-
+                                var materialLoader = MaterialLoader(engine, applicationContext)
+                                val boundingBoxNode = CubeNode(
+                                    engine,
+                                    size = modelNode.extents,
+                                    center = modelNode.center,
+                                    materialInstance = materialLoader.createColorInstance(Color.White.copy(alpha = 0.5f))
+                                ).apply {
+                                    isVisible = false
+                                }
+                                modelNode.addChildNode(boundingBoxNode)
                                 addChildNode(modelNode)
 
                                 listOf(modelNode, anchorNode).forEach {
                                     it.onDoubleTap = {
                                         Toast.makeText(applicationContext, "Double tab", Toast.LENGTH_SHORT).show()
-
+                                        val anchorNodePair = Pair(modelNode, anchorNode)
+                                        selectedAnchors.add(anchorNodePair)
+                                        boundingBoxNode.isVisible = true
                                         true
                                     }
                                 }

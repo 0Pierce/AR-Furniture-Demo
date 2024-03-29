@@ -15,9 +15,12 @@ android {
 
     buildFeatures {
         viewBinding = true
+        compose = true
     }
 
-
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.10"
+    }
 
     defaultConfig {
         applicationId = "com.exceptionhandlers.avante_ar"
@@ -50,7 +53,9 @@ android {
 dependencies {
 
     implementation("androidx.activity:activity:1.8.0")
+    implementation ("androidx.compose.ui:ui:1.6.4")
     implementation("com.google.firebase:firebase-auth:22.3.1")
+    implementation("androidx.compose.ui:ui-graphics-android:1.6.4")
     val fragment_version = "1.6.2"
 
     implementation("androidx.core:core-ktx:1.12.0")
