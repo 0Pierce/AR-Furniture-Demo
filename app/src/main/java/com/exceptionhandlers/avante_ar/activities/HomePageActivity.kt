@@ -1,4 +1,4 @@
-package com.exceptionhandlers.avante_ar
+package com.exceptionhandlers.avante_ar.activities
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
@@ -9,10 +9,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.view.View
 import android.widget.Button
-import android.widget.Toast
 import androidx.cardview.widget.CardView
+import com.exceptionhandlers.avante_ar.R
 import com.google.firebase.auth.FirebaseAuth
 import kotlin.system.exitProcess
 

@@ -19,18 +19,21 @@
         android:theme="@style/Theme.AvanteAR"
         tools:targetApi="31">
         <activity
-            android:name=".RegisterActivity"
+            android:name=".activities.LoadSavedLayoutsActivity"
             android:exported="false" />
         <activity
-            android:name=".HomePageActivity"
+            android:name=".activities.RegisterActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.HomePageActivity"
             android:exported="false"
             android:theme="@style/Theme.AvanteAR" />
         <activity
-            android:name=".LiveViewActivity"
+            android:name=".activities.LiveViewActivity"
             android:exported="false"
             android:theme="@style/Theme.AvanteActionBar" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".activities.LoginActivity"
             android:exported="true"
             android:theme="@style/Theme.AvanteAR">
             <intent-filter>

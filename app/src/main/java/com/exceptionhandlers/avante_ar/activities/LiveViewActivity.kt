@@ -1,4 +1,4 @@
-package com.exceptionhandlers.avante_ar
+package com.exceptionhandlers.avante_ar.activities
 
 
 import android.annotation.SuppressLint
@@ -9,12 +9,10 @@ import android.util.Log
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
-import android.view.ViewConfiguration
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
-import android.widget.ToggleButton
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
@@ -28,6 +26,7 @@ import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.add
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
+import com.exceptionhandlers.avante_ar.R
 import com.exceptionhandlers.avante_ar.dataClasses.AnchorHolder
 import com.exceptionhandlers.avante_ar.dataClasses.CatalogItem
 import com.exceptionhandlers.avante_ar.depth.AABB
@@ -45,12 +44,9 @@ import com.google.ar.core.Plane
 import com.google.ar.core.TrackingFailureReason
 import com.google.ar.core.TrackingState
 import com.google.ar.core.exceptions.NotYetAvailableException
-import com.google.firebase.Firebase
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.database
 import io.github.sceneview.ar.ARSceneView
-import io.github.sceneview.ar.arcore.getUpdatedPlanes
 import io.github.sceneview.ar.getDescription
 import io.github.sceneview.ar.node.AnchorNode
 import io.github.sceneview.loaders.MaterialLoader
@@ -60,9 +56,7 @@ import io.github.sceneview.node.ModelNode
 import io.github.sceneview.rememberMaterialLoader
 import kotlinx.coroutines.launch
 import java.io.IOException
-import java.lang.StrictMath.sqrt
 import java.util.function.BiConsumer
-import kotlin.math.acos
 
 /*
 *Name: LiveViewActivity
@@ -147,8 +141,10 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener {
         instructionText.text = trackingFailureReason?.let {
             it.getDescription(this)
         } ?: if (anchorNode == null) {
+            isLoading = true
             getString(R.string.point_your_phone_down)
         } else {
+            isLoading = false
             null
         }
     }
@@ -336,7 +332,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener {
         //A loading icon that indicates plane scan (Currently not visible)
         //Acts as a flag for other components
         loadingView = findViewById(R.id.loadingView)
-        isLoading = false
+
 
         //Starts a new ARCore session for the sceneviewPort
         sceneViewPort = findViewById<ARSceneView?>(R.id.sceneViewLive).apply {
@@ -386,10 +382,17 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener {
             }
 
 
-            //Gathers frame data and once a plane is detected, places the first anchor
+            //Gathers frame data
             onSessionUpdated = { _, frame ->
 
 
+
+
+//                    if(frame.getUpdatedPlanes().isNullOrEmpty()){
+//                        isLoading = true
+//                    }else{
+//                        isLoading = false
+//                    }
 
 //                if (anchorNode == null) {
 //                    //Gets the currently tracked planes if there are no anchor nodes
@@ -748,7 +751,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener {
 
 
         val position = Position(anchor.pose.tx(), anchor.pose.ty(), anchor.pose.tz())
-        val anchorNodePair = Pair(anchorNode, item.imgPath)
+        val anchorNodePair = Pair(anchorNode, item)
         anchorsWithNodes.add(anchorNodePair as Pair<AnchorNode, CatalogItem>)
         uncloudedAnchors.add(anchorNodePair)
 
