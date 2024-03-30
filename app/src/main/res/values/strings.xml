@@ -16,6 +16,8 @@
     <string name="btnCat">Catalogue</string>
     <string name="btnRemoveAll">Remove all</string>
     <string name="btnMeasure">Measure distance</string>
+    <string name="btnRemoveSelected">Remove selected</string>
+    <string name="btnSaveCloudAnchors">Save cloud anchors</string>
     <string name="open">Open</string>
     <string name="close">Close</string>
 </resources>

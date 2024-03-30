@@ -11,6 +11,12 @@
         android:title="@string/btnRemoveAll" />
 
     <item android:id="@+id/btnFour"
+        android:title="@string/btnRemoveSelected" />
+
+    <item android:id="@+id/btnFive"
         android:title="@string/btnMeasure" />
+
+    <item android:id="@+id/btnSix"
+        android:title="@string/btnSaveCloudAnchors" />
 
 </menu>

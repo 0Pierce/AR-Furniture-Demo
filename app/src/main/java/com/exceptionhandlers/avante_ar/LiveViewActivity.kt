@@ -237,7 +237,33 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                     drawerMenuLayout.closeDrawer(GravityCompat.START)
                 }
 
-                R.id.btnFour ->{
+                //Remove selected anchors
+                R.id.btnFour->{
+                    if(selectedAnchors.isNotEmpty()){
+                        for(anchor in selectedAnchors){
+
+                            //Gets are the required data of the anchor
+                            val anchorNode = anchor.second
+                            val pos = anchorNode.position
+                            val AnchorPair = Pair(anchorNode,pos)
+
+                            //Removes the selected anchor from all the lists and viewport
+                            sceneViewPort.removeChildNode(anchorNode)
+                            anchorNode.detachAnchor()
+                            anchorsWithNodes.remove(AnchorPair)
+                            selectedAnchors.remove(anchor)
+                        }
+                        //Closes the drawer
+                        drawerMenuLayout.closeDrawer(GravityCompat.START)
+                    }else{
+                        Toast.makeText(this, "No anchors selected", Toast.LENGTH_SHORT).show()
+                    }
+
+
+                }
+
+                //Calc distance between two selected anchors
+                R.id.btnFive ->{
                     if(selectedAnchors.size == 2 ){
                         val pos1 = selectedAnchors.first().first.position
                         val pos2 = selectedAnchors.first().second.position
@@ -248,12 +274,15 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                         drawerMenuLayout.closeDrawer(GravityCompat.START)
                     }
                 }
+                //Save cloud anchors
+                R.id.btnSix ->{
 
+                }
 
             }
             true
-
         }
+
 
 
         //Anson thing
@@ -325,9 +354,9 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
                     else -> Config.DepthMode.DISABLED
                 }
 
-                val config = Config(session)
+
                 config.cloudAnchorMode = Config.CloudAnchorMode.ENABLED
-                session.configure(config)
+
 
                 //UNSURE: but you can guess by going off their names
                 //No instant placements (Guessing objects cannot snap?)
