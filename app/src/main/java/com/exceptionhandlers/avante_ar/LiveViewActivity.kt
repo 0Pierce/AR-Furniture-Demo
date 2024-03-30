@@ -54,11 +54,10 @@ import io.github.sceneview.math.Position
 import io.github.sceneview.node.CubeNode
 import io.github.sceneview.node.ModelNode
 import io.github.sceneview.rememberMaterialLoader
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.ComposeView
+
 import androidx.compose.ui.viewinterop.AndroidView
 import com.google.android.filament.Box
-import com.google.android.filament.Engine
+
 
 
 import kotlinx.coroutines.launch
@@ -994,7 +993,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 //    private val resolveButton: Button? = null
 
 // Initialize Cloud Anchor variables.
-    currentMode = HostResolveMode.NONE
+//    currentMode = HostResolveMode.NONE
 
 
 //     private fun setNewAnchor(newAnchor: Anchor) {
