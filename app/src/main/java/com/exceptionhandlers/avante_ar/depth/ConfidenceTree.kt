@@ -325,7 +325,7 @@ internal class Chunk(sl: Double, og: Triple<Double, Double, Double>, res: Double
 }
 
 class ConfidenceTree(ccull: Int, res: Double, cres: Double, ma: Int) {
-    private var meterChunks = HashMap<Triple<Int, Int, Int>, Chunk>() //chunks in this outer layer are a meter cube
+    private var meterChunks = mutableMapOf<Triple<Int, Int, Int>, Chunk>() //chunks in this outer layer are a meter cube
     private val multiplier = 0.2 //seems the default units are 0.2m long
     private val cullTarget = ccull
     private val resolution = res

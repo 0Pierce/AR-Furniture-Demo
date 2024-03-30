@@ -54,10 +54,11 @@ import io.github.sceneview.math.Position
 import io.github.sceneview.node.CubeNode
 import io.github.sceneview.node.ModelNode
 import io.github.sceneview.rememberMaterialLoader
-
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.viewinterop.AndroidView
 import com.google.android.filament.Box
-
+import com.google.android.filament.Engine
 
 
 import kotlinx.coroutines.launch
@@ -70,6 +71,8 @@ import com.google.ar.core.Anchor.CloudAnchorState
 import com.google.ar.core.Config.CloudAnchorMode
 import com.google.ar.core.HitResult
 import com.google.ar.core.PointCloud
+import java.util.function.BiConsumer
+
 /*
 *Name: LiveViewActivity
 *
@@ -114,6 +117,11 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
     private var anchorsWithNodes = mutableListOf<Pair<AnchorNode, Position>>()
     private var selectedAnchors = mutableListOf<Pair<ModelNode,AnchorNode>>()
     private lateinit var materialLoader : MaterialLoader
+
+    private var cloudmode = HostResolveMode.NONE
+    private var uncloudedAnchors = mutableListOf<Pair<AnchorNode, Position>>()
+    private var cloudIDs = mutableListOf<String>()
+    private var idToModel = mutableMapOf<String, CatalogItems?>()
 
     private var depthBtnFlag : Boolean = false
 
@@ -787,7 +795,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
         val position = Position(anchor.pose.tx(), anchor.pose.ty(), anchor.pose.tz())
         val anchorNodePair = Pair(anchorNode, position)
         anchorsWithNodes.add(anchorNodePair as Pair<AnchorNode, Position>)
-
+        uncloudedAnchors.add(anchorNodePair)
 
 
 
@@ -944,6 +952,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
             sceneViewPort.removeChildNode(anchorNode)
             // Remove the anchor node from the list of anchors with nodes
             anchorsWithNodes.removeAll { it.first == anchorNode }
+            uncloudedAnchors.removeAll { it.first == anchorNode }
             selectedAnchorNode = null
             updateInstructions()
         }
@@ -970,12 +979,65 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
     }
 
     // Cloud Anchor Stuffs
-
-         private enum class HostResolveMode {
-            NONE,
-            HOSTING,
-            RESOLVING
-         }
+    private fun enableHosting() {
+        val session = sceneViewPort.session ?: return
+        val config = Config(session)
+        config.cloudAnchorMode = Config.CloudAnchorMode.ENABLED
+        sceneViewPort.session!!.configure(config)
+        cloudmode = HostResolveMode.HOSTING
+    }
+    private fun enableResolving() {
+        val session = sceneViewPort.session ?: return
+        val config = Config(session)
+        config.cloudAnchorMode = Config.CloudAnchorMode.ENABLED
+        sceneViewPort.session!!.configure(config)
+        cloudmode = HostResolveMode.RESOLVING
+    }
+    private fun turnCAOff() {
+        val session = sceneViewPort.session ?: return
+        val config = Config(session)
+        config.cloudAnchorMode = Config.CloudAnchorMode.DISABLED
+        sceneViewPort.session!!.configure(config)
+        cloudmode = HostResolveMode.NONE
+    }
+    private fun addID(ID: String, state: CloudAnchorState) {
+        if(state == CloudAnchorState.SUCCESS) {
+            cloudIDs.add(ID)
+        } else {
+            Toast.makeText(this, "Add failure for cloud anchor: "+state.toString(), Toast.LENGTH_SHORT).show()
+        }
+    }
+    private fun addResAnchor(id: String, a: Anchor, state: CloudAnchorState) {
+        if(state == CloudAnchorState.SUCCESS) {
+            val itemToAdd = idToModel.getOrDefault(id, null)
+            addAnchorNode(a, itemToAdd)
+        } else {
+            Toast.makeText(this, "Resolve failure for cloud anchor: "+state.toString(), Toast.LENGTH_SHORT).show()
+        }
+    }
+    private fun updateCA() { //updates either the cloud anchors or local anchors depending on what the mode is
+                             //if updating local anchors (resolving mode), make sure to put the correct IDs in the ID list beforehand
+        val session = sceneViewPort.session ?: return
+        if(cloudmode == HostResolveMode.NONE) return
+        else if(cloudmode == HostResolveMode.HOSTING) {
+            cloudIDs.clear()
+            while(uncloudedAnchors.isNotEmpty()) {
+                val ca = uncloudedAnchors.removeAt(0);
+                val addIDBC: BiConsumer<String, CloudAnchorState> = BiConsumer{x, y -> addID(x, y)}
+                session.hostCloudAnchorAsync(ca.first.anchor, 365, addIDBC)
+            }
+        } else {
+            for(id in cloudIDs) {
+                val addRA: BiConsumer<Anchor, CloudAnchorState> = BiConsumer{x, y -> addResAnchor(id, x, y)}
+                session.resolveCloudAnchorAsync(id, addRA)
+            }
+        }
+    }
+     private enum class HostResolveMode {
+        NONE,
+        HOSTING,
+        RESOLVING
+     }
 
     // Import pointCloudRenderer from sceneview
 // (https://developers.arcgis.com/javascript/latest/api-reference/esri-renderers-PointCloudRenderer.html)
@@ -993,8 +1055,6 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
 //    private val resolveButton: Button? = null
 
 // Initialize Cloud Anchor variables.
-//    currentMode = HostResolveMode.NONE
-
 
 //     private fun setNewAnchor(newAnchor: Anchor) {
 //        synchronized(anchorLock) {
