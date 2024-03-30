@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "50372043694",
+    "project_id": "avante-ar",
+    "storage_bucket": "avante-ar.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:50372043694:android:490602e4003f3289345e3f",
+        "android_client_info": {
+          "package_name": "com.exceptionhandlers.avante_ar"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBdyIHTCkstyp58NLRvSu9HZbE_cmhCxBE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

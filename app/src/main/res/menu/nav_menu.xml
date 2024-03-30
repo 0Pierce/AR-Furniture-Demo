@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/btnOne"
+        android:title="@string/btnCat" />
+
+    <item android:id="@+id/btnTwo"
+        android:title="@string/btnDepth" />
+
+    <item android:id="@+id/btnThree"
+        android:title="@string/btnRemoveAll" />
+
+    <item android:id="@+id/btnFour"
+        android:title="@string/btnRemoveSelected" />
+
+    <item android:id="@+id/btnFive"
+        android:title="@string/btnMeasure" />
+
+    <item android:id="@+id/btnSix"
+        android:title="@string/btnSaveCloudAnchors" />
+
+</menu>

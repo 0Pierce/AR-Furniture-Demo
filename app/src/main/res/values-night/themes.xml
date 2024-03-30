@@ -1,7 +1,38 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.AvanteAR" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+    <style name="Base.Theme.AvanteAR" parent="Theme.Material3.Dark.NoActionBar">
+
+    </style>
+
+
+<!--Main theme-->
+    <style name="Theme.AvanteActionBar" parent="Theme.AppCompat" >
+        <item name="colorPrimary">@color/avanteDark</item>
+        <item name="colorPrimaryVariant">@color/black</item>
+        <item name="colorOnPrimary">@color/avanteLightDark</item>
+
+<!--        Secondary colors-->
+        <item name="colorSecondary">@color/avanteRed</item>
+        <item name="colorSecondaryVariant">@color/avanteRed</item>
+        <item name="colorOnSecondary">@color/avanteDark</item>
+
+    </style>
+
+
+    <style name="Theme.AvanteAR" parent="Base.Theme.AvanteAR" >
+        <item name="colorPrimary">@color/avanteRed</item>
+        <item name="colorPrimaryVariant">@color/avanteDark</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <!--        Secondary colors-->
+        <item name="colorSecondary">@color/avanteRed</item>
+        <item name="colorSecondaryVariant">@color/black</item>
+        <item name="colorOnSecondary">@color/black</item>
+        
+
+<!--        items-->
+
+
+
     </style>
 </resources>

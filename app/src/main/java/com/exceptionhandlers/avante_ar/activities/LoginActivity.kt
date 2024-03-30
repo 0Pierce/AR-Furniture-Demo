@@ -1,0 +1,58 @@
+package com.exceptionhandlers.avante_ar.activities
+
+import android.content.Intent
+import android.os.Bundle
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import com.exceptionhandlers.avante_ar.R
+import com.google.firebase.auth.FirebaseAuth
+
+class LoginActivity : AppCompatActivity() {
+
+    private lateinit var firebaseAuth : FirebaseAuth
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContentView(R.layout.activity_login)
+
+        firebaseAuth = FirebaseAuth.getInstance()
+
+
+        val tvSignup = findViewById<TextView>(R.id.tvSignUp).setOnClickListener{
+            startActivity(Intent(this, RegisterActivity::class.java))
+
+        }
+
+        val btnSkip = findViewById<TextView>(R.id.btnSkip).setOnClickListener{
+            startActivity(Intent(this, HomePageActivity::class.java))
+
+        }
+
+
+        val btnLogin = findViewById<Button>(R.id.btnLogin).setOnClickListener{
+            val email = findViewById<EditText>(R.id.etxtEmailLogin).text.toString()
+            val pass = findViewById<EditText>(R.id.etxtPassLogin).text.toString()
+            Toast.makeText(this, "Clicked", Toast.LENGTH_SHORT).show()
+            if(email.isNotEmpty() && pass.isNotEmpty()){
+
+
+//Signs the user in with the text from the fields
+                firebaseAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener{
+                    startActivity(Intent(this, HomePageActivity::class.java))
+
+                }
+
+            }else{
+                Toast.makeText(this, "Invalid field", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+
+
+    }
+}

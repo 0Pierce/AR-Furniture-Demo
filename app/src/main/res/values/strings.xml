@@ -2,4 +2,22 @@
     <string name="app_name">Avante-AR</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="objPlaceholder">Cat</string>
+
+
+    <string name="change_model">Change Model</string>
+    <string name="instant_placement">Instant Placement</string>
+    <string name="depth_placement">Depth Placement</string>
+    <string name="plane_placement">Plane Placement</string>
+    <string name="best_placement">Best Placement</string>
+    <string name="point_your_phone_down">Point your phone down at an empty space, and move it around slowly</string>
+    <string name="max_anchors_reached">Max reached</string>
+    <string name="btnDepth">Depth</string>
+    <string name="btnCat">Catalogue</string>
+    <string name="btnRemoveAll">Remove all</string>
+    <string name="btnMeasure">Measure distance</string>
+    <string name="btnRemoveSelected">Remove selected</string>
+    <string name="btnSaveCloudAnchors">Save cloud anchors</string>
+    <string name="open">Open</string>
+    <string name="close">Close</string>
 </resources>
