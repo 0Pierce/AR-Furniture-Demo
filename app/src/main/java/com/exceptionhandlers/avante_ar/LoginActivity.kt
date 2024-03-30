@@ -49,7 +49,7 @@ class LoginActivity : AppCompatActivity() {
                 }
 
             }else{
-                Toast.makeText(this, "Account not found", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Invalid field", Toast.LENGTH_SHORT).show()
             }
         }
 

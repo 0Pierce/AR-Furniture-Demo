@@ -28,6 +28,8 @@ import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.add
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
+import com.exceptionhandlers.avante_ar.dataClasses.AnchorHolder
+import com.exceptionhandlers.avante_ar.dataClasses.CatalogItem
 import com.exceptionhandlers.avante_ar.depth.AABB
 import com.exceptionhandlers.avante_ar.depth.BoxRenderer
 import com.exceptionhandlers.avante_ar.depth.DepthData
@@ -43,6 +45,10 @@ import com.google.ar.core.Plane
 import com.google.ar.core.TrackingFailureReason
 import com.google.ar.core.TrackingState
 import com.google.ar.core.exceptions.NotYetAvailableException
+import com.google.firebase.Firebase
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.database
 import io.github.sceneview.ar.ARSceneView
 import io.github.sceneview.ar.arcore.getUpdatedPlanes
 import io.github.sceneview.ar.getDescription
@@ -87,28 +93,23 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener {
     lateinit var sceneViewPort: ARSceneView
     lateinit var loadingView: View
     lateinit var instructionText: TextView
-    lateinit var depthBtn: ToggleButton
-    lateinit var hostBtn: ToggleButton
-    lateinit var resolveBtn: ToggleButton
     private var anchorCount = 0
-    private var anchorPositions = mutableListOf<Position>()
-    private lateinit var myFrame: Frame
-    private lateinit var myAnchor: Anchor
-
-    private var selectedItems = mutableListOf<CatalogItems>()
-    private var visibleItems = mutableListOf<CatalogItems>()
+    private var selectedItems = mutableListOf<CatalogItem>()
+    private var visibleItems = mutableListOf<CatalogItem>()
     private val depthRenderer = DepthRenderer()
     private val boxRenderer = BoxRenderer()
-    private lateinit var btnRemove: Button
     lateinit var navMenuToggle: ActionBarDrawerToggle
-    private var anchorsWithNodes = mutableListOf<Pair<AnchorNode, Position>>()
-    private var selectedAnchors = mutableListOf<Pair<ModelNode, AnchorNode>>()
+    private var anchorsWithNodes = mutableListOf<Pair<AnchorNode, CatalogItem>>()
+    private var selectedAnchors = mutableListOf<Pair<AnchorNode, CatalogItem>>()
     private lateinit var materialLoader: MaterialLoader
 
     private var cloudmode = HostResolveMode.NONE
-    private var uncloudedAnchors = mutableListOf<Pair<AnchorNode, Position>>()
+    private var uncloudedAnchors = mutableListOf<Pair<AnchorNode, CatalogItem>>()
     private var cloudIDs = mutableListOf<String>()
-    private var idToModel = mutableMapOf<String, CatalogItems?>()
+    private var idToModel = mutableMapOf<String, CatalogItem?>()
+
+    private lateinit var firebaseDBref : DatabaseReference
+
 
     private var depthBtnFlag: Boolean = false
 
@@ -116,7 +117,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener {
 
     private val currentMode: HostResolveMode? = null
 
-    //Used as a flag and displaying loading icon (Not showing rn)
+    //Used as a flag and displaying loading icon
     var isLoading = false
         set(value) {
             field = value
@@ -158,8 +159,14 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_live_view)
 
+        firebaseDBref = FirebaseDatabase.getInstance().getReference("SavedAnchors")
         //sceneViewPort.lifecycle.currentState
 
+
+
+
+        //Gets and sets the engine for the fake composableView inside the layout
+        //Just used to facilitate the box rendering around 3d models
         val engine = Engine.create()
         findViewById<ComposeView>(R.id.my_composable).setContent {
             MaterialLoaderComposable(engine)
@@ -241,9 +248,9 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener {
                         for (anchor in selectedAnchors) {
 
                             //Gets are the required data of the anchor
-                            val anchorNode = anchor.second
-                            val pos = anchorNode.position
-                            val AnchorPair = Pair(anchorNode, pos)
+                            val anchorNode = anchor.first
+                            val item = anchor.second
+                            val AnchorPair = Pair(anchorNode, item)
 
                             //Removes the selected anchor from all the lists and viewport
                             sceneViewPort.removeChildNode(anchorNode)
@@ -263,8 +270,8 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener {
                 //Calc distance between two selected anchors
                 R.id.btnFive -> {
                     if (selectedAnchors.size == 2) {
-                        val pos1 = selectedAnchors.first().first.position
-                        val pos2 = selectedAnchors.first().second.position
+                        val pos1 = selectedAnchors[0].first.position
+                        val pos2 = selectedAnchors[1].first.position
                         Toast.makeText(
                             this,
                             "Distance: " + calculateDistance(pos1, pos2),
@@ -282,7 +289,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener {
                 }
                 //Save cloud anchors
                 R.id.btnSix -> {
-
+                    saveAnchors()
                 }
 
             }
@@ -290,9 +297,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener {
         }
 
 
-        //Anson thing
-        touchSlop = ViewConfiguration.get(this).scaledTouchSlop
-        //btnRemove = findViewById(R.id.btnRemove)
+
 
         if (savedInstanceState == null) {
 
@@ -331,6 +336,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener {
         //A loading icon that indicates plane scan (Currently not visible)
         //Acts as a flag for other components
         loadingView = findViewById(R.id.loadingView)
+        isLoading = false
 
         //Starts a new ARCore session for the sceneviewPort
         sceneViewPort = findViewById<ARSceneView?>(R.id.sceneViewLive).apply {
@@ -384,24 +390,25 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener {
             onSessionUpdated = { _, frame ->
 
 
-                if (anchorNode == null) {
-                    //Gets the currently tracked planes if there are no anchor nodes
-                    Log.d("model", "frame Helmet: " + frame)
 
-                    frame.getUpdatedPlanes()
-                        //A iterable interface checking if the current plane is a flat surfaces
-                        .firstOrNull { it.type == Plane.Type.HORIZONTAL_UPWARD_FACING }
-
-                        //If yes, create a new anchor node at the center and track it
-                        ?.let { plane ->
-                            Log.d("model", "frame Helmet in: " + plane)
-                            addAnchorNode(plane.createAnchor(plane.centerPose))
-
-                        }
-                    //Log.d("model", "frame Helmet: "+frame?.getUpdatedPlanes()?.firstOrNull { it.type == Plane.Type.HORIZONTAL_UPWARD_FACING })
-
-
-                }
+//                if (anchorNode == null) {
+//                    //Gets the currently tracked planes if there are no anchor nodes
+//                    Log.d("model", "frame Helmet: " + frame)
+//
+//                    frame.getUpdatedPlanes()
+//                        //A iterable interface checking if the current plane is a flat surfaces
+//                        .firstOrNull { it.type == Plane.Type.HORIZONTAL_UPWARD_FACING }
+//
+//                        //If yes, create a new anchor node at the center and track it
+//                        ?.let { plane ->
+//                            Log.d("model", "frame Helmet in: " + plane)
+//                            addAnchorNode(plane.createAnchor(plane.centerPose))
+//
+//                        }
+//                    //Log.d("model", "frame Helmet: "+frame?.getUpdatedPlanes()?.firstOrNull { it.type == Plane.Type.HORIZONTAL_UPWARD_FACING })
+//
+//
+//                }
                 if (depthBtnFlag == true) {
                     Log.d("onDraw", "Updated onDrawFrame")
                     onDrawFrame()
@@ -475,57 +482,6 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener {
 
     }
 
-    //Unneeded?
-    private fun handleObjectSelection(event: MotionEvent) {
-        // Perform ray casting to check for intersections with objects
-        val hitResult = sceneViewPort.frame?.hitTest(event)
-
-
-        if (hitResult != null && !hitResult.isEmpty()) {
-            // Retrieve the selected object from hitResult
-            val hitPos = hitResult.get(0).hitPose
-            //Toast.makeText(this, "Hit object at: "+hitPos, Toast.LENGTH_SHORT).show()
-
-            val dtolerance: Double = 0.2 // Adjust as needed
-            val atolerance: Double = 0.0872665 //angular tolerance
-
-            val cx: Double = sceneViewPort.cameraNode.pose!!.tx().toDouble()
-            val cy: Double = sceneViewPort.cameraNode.pose!!.ty().toDouble()
-            val cz: Double = sceneViewPort.cameraNode.pose!!.tz().toDouble()
-
-            for ((_, anchorPosition) in anchorsWithNodes) {
-
-                val ddx: Double = (hitPos.tx()).toDouble() - anchorPosition.x
-                val ddy: Double = (hitPos.ty()).toDouble() - anchorPosition.y
-                val ddz: Double = (hitPos.tz()).toDouble() - anchorPosition.z
-
-                val hdx: Double = (hitPos.tx()).toDouble() - cx
-                val hdy: Double = (hitPos.ty()).toDouble() - cy
-                val hdz: Double = (hitPos.tz()).toDouble() - cz
-
-                val adx: Double = anchorPosition.x - cx
-                val ady: Double = anchorPosition.y - cy
-                val adz: Double = anchorPosition.z - cz
-
-                val asq: Double = hdx * hdx + hdy * hdy + hdz * hdz
-                val bsq: Double = adx * adx + ady * ady + adz * adz
-                val csq: Double = ddx * ddx + ddy * ddy + ddz * ddz
-
-                val costerm =
-                    asq + bsq - csq //cosine law: c^2 = a^2+b^2-2abcosC, where C is the angle opposite to side length c
-                val C = acos(costerm / (2 * sqrt(asq) * sqrt(bsq)))
-
-                if (C < atolerance || csq < dtolerance * dtolerance) {
-                    Toast.makeText(this, "Hit anchor", Toast.LENGTH_SHORT).show()
-                    return
-                } else {
-                    Toast.makeText(this, "No anchor hit", Toast.LENGTH_SHORT).show()
-                }
-
-            }
-
-        }
-    }
 
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -571,21 +527,21 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener {
     }
 
     //Place anchor depending where the user clicks
-    private fun handleTouchEvent(event: MotionEvent) {
-        if (event.action == MotionEvent.ACTION_DOWN && anchorCount < 4) {
-            try {
-                val hitResult = sceneViewPort.frame?.hitTest(event.x, event.y)?.firstOrNull()
-
-                hitResult?.let {
-                    val anchor = sceneViewPort.session?.createAnchor(hitResult.hitPose)
-
-                    anchor?.let { addAnchorNode(it) }
-                }
-            } catch (e: NotYetAvailableException) {
-                e.printStackTrace()
-            }
-        }
-    }
+//    private fun handleTouchEvent(event: MotionEvent) {
+//        if (event.action == MotionEvent.ACTION_DOWN && anchorCount < 4) {
+//            try {
+//                val hitResult = sceneViewPort.frame?.hitTest(event.x, event.y)?.firstOrNull()
+//
+//                hitResult?.let {
+//                    val anchor = sceneViewPort.session?.createAnchor(hitResult.hitPose)
+//
+//                    anchor?.let { addAnchorNode(it) }
+//                }
+//            } catch (e: NotYetAvailableException) {
+//                e.printStackTrace()
+//            }
+//        }
+//    }
 
 
     //Old greek guy equation
@@ -601,7 +557,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener {
 
     //Adding a new anchor based on a anchor position
 
-    fun addAnchorNode(anchor: Anchor, item: CatalogItems? = null) {
+    fun addAnchorNode(anchor: Anchor, item: CatalogItem) {
         Toast.makeText(this, "Anchor", Toast.LENGTH_SHORT).show()
         if (item != null) {
             Log.d("model", "Placing: " + item.name)
@@ -655,7 +611,6 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener {
                             val selectedPath = item.imgPath
                             Log.d("model", "Loading furniture: " + selectedPath)
                             sceneViewPort.modelLoader.loadModelInstance(
-
                                 selectedPath
                                 //UNSURE: Makes the model scalable and adjustable?
                             )?.let { modelInstance ->
@@ -705,6 +660,9 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener {
                                 listOf(modelNode, anchorNode).forEach {
                                     it.onDoubleTap = {
 
+
+
+
                                         //Checks if that model already has a box around it
                                         //If no, goes ahead and makes one
                                         if (boundingBoxNodeDouble.isVisible == false) {
@@ -713,7 +671,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener {
                                                 "Double tab",
                                                 Toast.LENGTH_SHORT
                                             ).show()
-                                            val anchorNodePair = Pair(modelNode, anchorNode)
+                                            val anchorNodePair = Pair(anchorNode, item)
                                             //Used to calc the distance between selected anchors
                                             //and other stuff in the future
                                             selectedAnchors.add(anchorNodePair)
@@ -722,7 +680,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener {
 
                                             //If yes, removes the box
                                         } else {
-                                            val anchorNodePair = Pair(modelNode, anchorNode)
+                                            val anchorNodePair = Pair(anchorNode, item)
                                             boundingBoxNodeDouble.isVisible = false
                                             selectedAnchors.remove(anchorNodePair)
                                             true
@@ -787,9 +745,11 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener {
 
 
         )
+
+
         val position = Position(anchor.pose.tx(), anchor.pose.ty(), anchor.pose.tz())
-        val anchorNodePair = Pair(anchorNode, position)
-        anchorsWithNodes.add(anchorNodePair as Pair<AnchorNode, Position>)
+        val anchorNodePair = Pair(anchorNode, item.imgPath)
+        anchorsWithNodes.add(anchorNodePair as Pair<AnchorNode, CatalogItem>)
         uncloudedAnchors.add(anchorNodePair)
 
 
@@ -807,7 +767,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener {
     }
 
 
-    override fun onCatalogItemSelected(item: CatalogItems) {
+    override fun onCatalogItemSelected(item: CatalogItem) {
         selectedItems.add(item)
         Toast.makeText(this, "Item selected: ${item.name}", Toast.LENGTH_SHORT).show()
     }
@@ -925,51 +885,30 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener {
 
     }
 
-    // Variable to store the selected anchor node
-    private var selectedAnchorNode: AnchorNode? = null
-
-    // Variable to store the touch slop value
-    private var touchSlop = 0
 
 
-    //Unneeded?
-    // Method to select an item
-    private fun selectItem(anchorNode: AnchorNode) {
-        selectedAnchorNode = anchorNode
-        // TO-DO: Can be used for other stuff but right now just for anchor deletion
-    }
 
-    //Unneeded?
-    private fun deleteSelectedItem() {
-        selectedAnchorNode?.let { anchorNode ->
-            // Remove the anchor node from the scene
-            sceneViewPort.removeChildNode(anchorNode)
-            // Remove the anchor node from the list of anchors with nodes
-            anchorsWithNodes.removeAll { it.first == anchorNode }
-            uncloudedAnchors.removeAll { it.first == anchorNode }
-            selectedAnchorNode = null
-            updateInstructions()
+    //Sends hard anchor data(POS,Path) to firebase
+    fun saveAnchors(){
+
+        val storedAnchor = firebaseDBref.push().key!!
+
+        for(pair in anchorsWithNodes) run {
+
+            val newAnchor = AnchorHolder(pair.first.position.x, pair.first.position.y,pair.first.position.z,pair.second.imgPath)
+            firebaseDBref.child(storedAnchor).setValue(newAnchor)
+                .addOnCompleteListener{
+                    Toast.makeText(this, "Anchor/s Saved", Toast.LENGTH_SHORT).show()
+                }
+
+                .addOnFailureListener{
+                    Toast.makeText(this, "Failed to save Anchor/s", Toast.LENGTH_SHORT).show()
+                }
         }
+
     }
 
 
-    //Unneeded?
-    // Method to handle long-click event
-    fun onItemLongClick(event: MotionEvent) {
-        // Iterate through all anchors to check if the long-click is near any anchor
-        for ((anchorNode, position) in anchorsWithNodes) {
-            // Calculate the distance between the long-click position and the anchor position
-            val distance = calculateDistance(Position(event.x, event.y), position)
-            // Check if the distance is within the touch slop (a threshold for considering it a long-click)
-            if (touchSlop > distance) {
-                // Select the anchor node
-                selectItem(anchorNode)
-                // Delete the selected item
-                deleteSelectedItem()
-                return
-            }
-        }
-    }
 
     // Cloud Anchor Stuffs
 
@@ -1032,7 +971,7 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener {
     private fun addResAnchor(id: String, a: Anchor, state: CloudAnchorState) {
         if (state == CloudAnchorState.SUCCESS) {
             val itemToAdd = idToModel.getOrDefault(id, null)
-            addAnchorNode(a, itemToAdd)
+          //  addAnchorNode(a, itemToAdd)
         } else {
             Toast.makeText(
                 this,

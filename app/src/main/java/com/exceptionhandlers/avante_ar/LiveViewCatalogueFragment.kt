@@ -7,22 +7,24 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
+import com.exceptionhandlers.avante_ar.dataClasses.CatalogItem
+
 
 
 interface OnCatalogItemSelectedListener {
 
 
-    fun onCatalogItemSelected(item: CatalogItems)
+    fun onCatalogItemSelected(item: CatalogItem)
 
 }
 
 //Class to hold the items
-data class CatalogItems(
-    val name: String,
-    val imgPath: String
-//    val price: String,
-//    val size: String
-)
+//data class CatalogItems(
+//    val name: String,
+//    val imgPath: String
+////    val price: String,
+////    val size: String
+//)
 
 
 class LiveViewCatalogueFragment : Fragment(R.layout.fragment_live_view_catalogue) {
@@ -66,9 +68,9 @@ class LiveViewCatalogueFragment : Fragment(R.layout.fragment_live_view_catalogue
 
     fun menu(view: View) {
         var itemsList = listOf(
-            CatalogItems(name = "shelf", imgPath = "models/book_shelf.glb"),
-            CatalogItems(name = "sofa", imgPath = "models/sofa_single.glb"),
-            CatalogItems(name = "statue", imgPath = "models/GLman.glb")
+            CatalogItem(name = "shelf", imgPath = "models/book_shelf.glb"),
+            CatalogItem(name = "sofa", imgPath = "models/sofa_single.glb"),
+            CatalogItem(name = "statue", imgPath = "models/GLman.glb")
 
         )
         val size = itemsList.size
@@ -89,7 +91,7 @@ class LiveViewCatalogueFragment : Fragment(R.layout.fragment_live_view_catalogue
         }
     }
 
-    private fun updateSelected(furniture: CatalogItems) {
+    private fun updateSelected(furniture: CatalogItem) {
         // Update the values of selectedItem
         selectedItem.apply {
             name = furniture.name

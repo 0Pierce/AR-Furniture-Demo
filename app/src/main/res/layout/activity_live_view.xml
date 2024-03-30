@@ -16,20 +16,20 @@
 
 
         <!--Viewport fragment (AR fragment)-->
+
+
         <androidx.compose.ui.platform.ComposeView
             android:id="@+id/my_composable"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_constraintBottom_toTopOf="@+id/instructionText"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.5"/>
+            app:layout_constraintVertical_bias="0.0" />
 
-
-
-            <io.github.sceneview.ar.ARSceneView
+        <io.github.sceneview.ar.ARSceneView
                 android:id="@+id/sceneViewLive"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -89,9 +89,10 @@
             android:background="#667AFF"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0"
 
+            app:layout_constraintVertical_bias="1.0"
             tools:visibility="visible" />
 
         <ImageButton
