@@ -1,5 +1,6 @@
 package com.exceptionhandlers.avante_ar
 
+
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.opengl.GLES20
@@ -19,6 +20,8 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
 import androidx.core.graphics.alpha
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ComposeView
 import androidx.core.view.GravityCompat
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
@@ -33,6 +36,7 @@ import com.exceptionhandlers.avante_ar.depth.BoxRenderer
 import com.exceptionhandlers.avante_ar.depth.DepthData
 import com.exceptionhandlers.avante_ar.depth.DepthRenderer
 import com.exceptionhandlers.avante_ar.depth.PointClusteringHelper
+import com.google.android.filament.Engine
 import com.google.android.material.navigation.NavigationView
 import com.google.ar.core.Anchor
 import com.google.ar.core.Config
@@ -62,12 +66,11 @@ import java.io.IOException
 import java.lang.StrictMath.sqrt
 import kotlin.math.acos
 
+
 import com.google.ar.core.Anchor.CloudAnchorState
 import com.google.ar.core.Config.CloudAnchorMode
 import com.google.ar.core.HitResult
 import com.google.ar.core.PointCloud
-
-
 /*
 *Name: LiveViewActivity
 *
@@ -966,4 +969,41 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener  {
             }
         }
     }
+
+    // Cloud Anchor Stuffs
+
+         private enum class HostResolveMode {
+            NONE,
+            HOSTING,
+            RESOLVING
+         }
+
+    // Import pointCloudRenderer from sceneview
+// (https://developers.arcgis.com/javascript/latest/api-reference/esri-renderers-PointCloudRenderer.html)
+//    private val pointCloudRenderer: PointCloudRenderer = PointCloudRenderer()
+//
+//
+//    private val anchorLock: Any? = Any()
+
+    // Adding two buttons: one for hosting (sending anchors to the db)
+    // resolveButton (to retrieve items from the db)
+
+    // onClick hostbutton:
+
+//    private val hostButton: Button? = null
+//    private val resolveButton: Button? = null
+
+// Initialize Cloud Anchor variables.
+    currentMode = HostResolveMode.NONE
+
+
+//     private fun setNewAnchor(newAnchor: Anchor) {
+//        synchronized(anchorLock) {
+//           if (anchor != null) {
+//            anchor.detach()
+//           }
+//           anchor = newAnchor
+//      }
+
+
 }
