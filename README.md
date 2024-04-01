@@ -18,7 +18,7 @@ The other branch is ``` development ``` which holds the most up-to-date version 
   - The homepage of the activity, currently holds 4 buttons for simple navigation, the camera viewport is the only accessible one right now
 
 * ```LiveViewActivity```
-  - The primary activity of this project which holds the fragment(```LiveViewFragment```) that facilitates the AR functionality of the app
+  - The primary activity of this project which holds the (```ARSceneviewport```) that facilitates the AR functionality of the app
   - It also allows us to have greater control of navigation and other activities/elements that do not need to be within the viewport itself
   
 * ```LiveViewCatalogue```
