@@ -11,8 +11,11 @@ The other branch is ``` development ``` which holds the most up-to-date version 
 
 # Functionality & Classes
 
+* ```Login/Signup Activities```
+  - Straight forward Login/SignUp activities using Firebase Authentication for logging in and registering users
+
 * ```HomePageActivity```
-  - A simple landing screen to facilitate testing and in and out access to the AR viewport
+  - The homepage of the activity, currently holds 4 buttons for simple navigation, the camera viewport is the only accessible one right now
 
 * ```LiveViewActivity```
   - The primary activity of this project which holds the fragment(```LiveViewFragment```) that facilitates the AR functionality of the app
