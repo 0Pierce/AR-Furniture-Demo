@@ -18,11 +18,11 @@ The other branch is ``` development ``` which holds the most up-to-date version 
   - The primary activity of this project which holds the fragment(```LiveViewFragment```) that facilitates the AR functionality of the app
   - It also allows us to have greater control of navigation and other activities/elements that do not need to be within the viewport itself
   
-* ```LiveViewFragment```
-  - A fragment which's only purpose is to hold the SceneView viewport (camera view). All logic pertaining to rendering and object interaction is held here
-
 * ```LiveViewCatalogue```
   - A pop-up scrollable menu which allows the user to select a variety of objects to be placed, currently not fully functional as we focus on the depth API
+
+*```Depth Package```*
+ -  Handles the collection of depth data from the camera viewport
 
  # Resources
  We did a lot of research on what kind of libraries and APIs we need to consider adding to make our lives a little easier. The following are the resources that we are actively using within the project. We will most likely expand this list as we continue
