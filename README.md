@@ -21,7 +21,7 @@ The other branch is ``` development ``` which holds the most up-to-date version 
 * ```LiveViewCatalogue```
   - A pop-up scrollable menu which allows the user to select a variety of objects to be placed, currently not fully functional as we focus on the depth API
 
-*```Depth Package```*
+* ```Depth Package```*
  -  Handles the collection of depth data from the camera viewport
 
  # Resources
