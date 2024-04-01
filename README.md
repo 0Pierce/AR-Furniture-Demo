@@ -19,7 +19,8 @@ The other branch is ``` development ``` which holds the most up-to-date version 
 
 * ```LiveViewActivity```
   - The primary activity of this project which holds the (```ARSceneviewport```) that facilitates the AR functionality of the app
-  - It also allows us to have greater control of navigation and other activities/elements that do not need to be within the viewport itself
+  - Most logic involving the 3D models, anchors and anything else involving the camera viewport is done here
+
   
 * ```LiveViewCatalogue```
   - A pop-up scrollable menu which allows the user to select a variety of objects to be placed, currently not fully functional as we focus on the depth API
