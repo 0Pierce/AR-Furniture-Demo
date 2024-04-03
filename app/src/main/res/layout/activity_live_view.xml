@@ -111,6 +111,62 @@
             app:layout_constraintVertical_bias="0.571"
             app:srcCompat="@drawable/cat_arrow" />
 
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layoutTitlePrompt"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="70dp"
+            android:background="@color/avanteDark"
+            android:visibility="invisible">
+
+            <TextView
+                android:id="@+id/textView11"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:gravity="center"
+                android:text="Enter Title:"
+                android:textSize="30dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <EditText
+                android:id="@+id/etxtLayoutTitle"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:hint="Title"
+                android:inputType="text"
+
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView11"
+                android:textSize="24dp"/>
+
+
+            <Button
+                android:id="@+id/btnConfirmTitle"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+
+                android:text="Confirm"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/etxtLayoutTitle" />
+
+            <Button
+                android:id="@+id/btnCancelTitle"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                app:layout_constraintTop_toBottomOf="@+id/btnConfirmTitle"
+                android:text="Cancel"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.navigation.NavigationView

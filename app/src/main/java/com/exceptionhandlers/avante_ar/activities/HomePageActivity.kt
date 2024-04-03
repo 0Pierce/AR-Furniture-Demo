@@ -70,6 +70,7 @@ class HomePageActivity : AppCompatActivity() {
 //
 //        }
 
+        //LiveView
         card1.setOnClickListener {
 
             //Just a animation
@@ -104,6 +105,8 @@ class HomePageActivity : AppCompatActivity() {
                 }
             })
         }
+
+        //Saved Layouts
         card2.setOnClickListener{
             val scaleDownX = ObjectAnimator.ofFloat(card2, "scaleX", 0.9f)
             val scaleDownY = ObjectAnimator.ofFloat(card2, "scaleY", 0.9f)
@@ -128,6 +131,9 @@ class HomePageActivity : AppCompatActivity() {
                 override fun onAnimationEnd(animation: Animator) {
                     super.onAnimationEnd(animation)
                     scaleUp.start()
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        startActivity(Intent(this@HomePageActivity, LoadSavedLayoutsActivity::class.java))
+                    },100)
                 }
             })
 

@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
@@ -18,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.GravityCompat
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
@@ -44,6 +46,7 @@ import com.google.ar.core.Plane
 import com.google.ar.core.TrackingFailureReason
 import com.google.ar.core.TrackingState
 import com.google.ar.core.exceptions.NotYetAvailableException
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import io.github.sceneview.ar.ARSceneView
@@ -285,7 +288,32 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener {
                 }
                 //Save cloud anchors
                 R.id.btnSix -> {
-                    saveAnchors()
+
+                    if(anchorsWithNodes!= null){
+                        drawerMenuLayout.closeDrawer(GravityCompat.START)
+                        val prompt = findViewById<ConstraintLayout>(R.id.layoutTitlePrompt)
+                        prompt.isVisible = true
+
+
+                        val btnConfirmTitle = findViewById<Button>(R.id.btnConfirmTitle).setOnClickListener{
+                        val edtxtLayoutTitle = findViewById<EditText>(R.id.etxtLayoutTitle)
+
+                            if(edtxtLayoutTitle.text.isNotEmpty()){
+                                var title = edtxtLayoutTitle.text.toString()
+                                saveAnchors(title)
+                            }
+
+                            drawerMenuLayout.closeDrawer(GravityCompat.START)
+                        }
+
+                        val btnCancelTitle = findViewById<Button>(R.id.btnCancelTitle).setOnClickListener{
+                            prompt.isVisible = false
+                            drawerMenuLayout.closeDrawer(GravityCompat.START)
+                        }
+                    }else{
+                        Toast.makeText(this, "No placed anchors", Toast.LENGTH_SHORT).show()
+                    }
+
                 }
 
             }
@@ -892,14 +920,21 @@ class LiveViewActivity : AppCompatActivity(), OnCatalogItemSelectedListener {
 
 
     //Sends hard anchor data(POS,Path) to firebase
-    fun saveAnchors(){
+    fun saveAnchors(title : String){
 
         val storedAnchor = firebaseDBref.push().key!!
-
+        val userAuth = FirebaseAuth.getInstance()
+        userAuth.currentUser.toString()
+        val id = userAuth.currentUser.toString()
+        val userData = Pair(id,title)
         for(pair in anchorsWithNodes) run {
 
             val newAnchor = AnchorHolder(pair.first.position.x, pair.first.position.y,pair.first.position.z,pair.second.imgPath)
-            firebaseDBref.child(storedAnchor).setValue(newAnchor)
+
+            //Wraps all of the data into a single object, sends the user data for every anchorNode
+            //This is a temp measure and should be properly implemented later
+            val dataPackage = Pair(newAnchor,userData)
+            firebaseDBref.child(storedAnchor).setValue(dataPackage)
                 .addOnCompleteListener{
                     Toast.makeText(this, "Anchor/s Saved", Toast.LENGTH_SHORT).show()
                 }
