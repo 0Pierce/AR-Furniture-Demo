@@ -1,5 +1,5 @@
 # AR-Furniture-Demo 
-An Android Augmented Reality app(Demo) designed to let users place furniture and other objects into an empty room using precise measurements.
+An Android Augmented Reality app(Demo) designed to let users place furniture and other objects into an empty room using precise measurements. This project is no longer being maintained and only served as a minimum viable product rather than a full pledged application
 Not all functionality is working due to library updates
 
 
