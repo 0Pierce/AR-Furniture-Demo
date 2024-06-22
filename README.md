@@ -1,4 +1,4 @@
-# Avante-AR 
+# AR-Furniture-Demo 
 An Android Augmented Reality app(Demo) designed to let users place furniture and other objects into an empty room using precise measurements
 Not all functionality is working due to library updates
 
