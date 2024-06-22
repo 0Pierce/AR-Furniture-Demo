@@ -1,5 +1,6 @@
 # Avante-AR 
-An Android Augmented Reality app designed to let users place furniture and other objects into an empty room using precise measurements
+An Android Augmented Reality app(Demo) designed to let users place furniture and other objects into an empty room using precise measurements
+Not all functionality is working due to library updates
 
 
 # Navigating the project 
@@ -12,7 +13,7 @@ The other branch is ``` development ``` which holds the most up-to-date version 
 # Functionality & Classes
 
 * ```Login/Signup Activities```
-  - Straight forward Login/SignUp activities using Firebase Authentication for logging in and registering users
+  - Straightforward Login/SignUp activities using Firebase Authentication for logging in and registering users
 
 * ```HomePageActivity```
   - The homepage of the activity, currently holds 4 buttons for simple navigation, the camera viewport is the only accessible one right now
